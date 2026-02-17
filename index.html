@@ -281,30 +281,30 @@
             
             <div class="input-group">
                 <label>Nombre de tu empresa</label>
-                <input type="text" id="nombreEmpresa1" placeholder="Ej: Satelcom SAC">
+                <input type="text" id="nombreEmpresa1" placeholder="Nombre de tu empresa">
             </div>
             
             <div class="two-column">
                 <div class="input-group">
                     <label>Ingresos mensuales promedio (sin IGV) S/</label>
-                    <input type="number" id="ingresos1" placeholder="42,000">
+                    <input type="number" id="ingresos1" placeholder="0">
                 </div>
                 
                 <div class="input-group">
                     <label>Costos productivos mensuales S/</label>
-                    <input type="number" id="costos1" placeholder="16,500">
+                    <input type="number" id="costos1" placeholder="0">
                 </div>
             </div>
             
             <div class="two-column">
                 <div class="input-group">
                     <label>Gastos fijos mensuales S/</label>
-                    <input type="number" id="gastosFijos1" placeholder="14,800">
+                    <input type="number" id="gastosFijos1" placeholder="0">
                 </div>
                 
                 <div class="input-group">
                     <label>Gastos variables mensuales S/</label>
-                    <input type="number" id="gastosVariables1" placeholder="3,750">
+                    <input type="number" id="gastosVariables1" placeholder="0">
                 </div>
             </div>
             
@@ -458,17 +458,24 @@
             
             mostrarLoading();
             
-            // Aquí se procesaría el Excel y se enviaría a Claude API
-            // Por ahora, simulamos con datos de ejemplo
-            const datosEjemplo = {
-                nombreEmpresa: 'Empresa desde Excel',
-                ingresos: 42162,
-                costos: 16547,
-                gastosFijos: 14828,
-                gastosVariables: 3750
+            // Leer el archivo como texto para extraer datos básicos
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const nombreArchivo = archivoSubido.name.replace(/\.[^/.]+$/, "");
+                const datosExcel = {
+                    nombreEmpresa: nombreArchivo,
+                    ingresos: 0,
+                    costos: 0,
+                    gastosFijos: 0,
+                    gastosVariables: 0,
+                    problemas: 'Análisis basado en archivo: ' + archivoSubido.name
+                };
+                
+                alert('Para un análisis preciso desde Excel, ingresa los datos manualmente en la pestaña "Ingreso Manual". El análisis desde Excel requiere configuración adicional.');
+                document.getElementById('loading').classList.remove('show');
+                cambiarTab(0);
             };
-            
-            await analizarConIA(datosEjemplo);
+            reader.readAsText(archivoSubido);
         }
         
         async function analizarConIA(datos) {
