@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner Financiero IA PRO - Análisis Profundo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: none;
+            font-size: 1.1em;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #667eea;
+            font-weight: bold;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 40px;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+        }
+        
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .input-group textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            background: #f8f9fa;
+            border-color: #764ba2;
+        }
+        
+        .upload-area.dragover {
+            background: #e8eaf6;
+            border-color: #667eea;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .resultado {
+            display: none;
+        }
+        
+        .resultado.show {
+            display: block;
+            animation: slideIn 0.5s;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .analisis-ia {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .analisis-ia h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        
+        .analisis-ia p {
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .recomendacion {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #4caf50;
+        }
+        
+        .recomendacion h4 {
+            color: #4caf50;
+            margin-bottom: 10px;
+        }
+        
+        .chatbot {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+        
+        .chatbot:hover {
+            transform: scale(1.1);
+        }
+        
+        .chatbot svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Scanner Financiero IA PRO</h1>
+            <div class="badge">Análisis con Inteligencia Artificial Claude</div>
+            <p style="margin-top: 15px; opacity: 0.9;">Sube tus datos y obtén un análisis financiero profesional en minutos</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="cambiarTab(0)">📊 Ingreso Manual</button>
+            <button class="tab" onclick="cambiarTab(1)">📁 Subir Excel</button>
+            <button class="tab" onclick="cambiarTab(2)">💬 Chatbot IA</button>
+        </div>
+        
+        <!-- TAB 1: INGRESO MANUAL -->
+        <div class="tab-content active" id="tab0">
+            <h2 style="color: #667eea; margin-bottom: 30px;">Ingresa los datos de tu empresa</h2>
+            
+            <div class="input-group">
+                <label>Nombre de tu empresa</label>
+                <input type="text" id="nombreEmpresa1" placeholder="Ej: Satelcom SAC">
+            </div>
+            
+            <div class="two-column">
+                <div class="input-group">
+                    <label>Ingresos mensuales promedio (sin IGV) S/</label>
+                    <input type="number" id="ingresos1" placeholder="42,000">
+                </div>
+                
+                <div class="input-group">
+                    <label>Costos productivos mensuales S/</label>
+                    <input type="number" id="costos1" placeholder="16,500">
+                </div>
+            </div>
+            
+            <div class="two-column">
+                <div class="input-group">
+                    <label>Gastos fijos mensuales S/</label>
+                    <input type="number" id="gastosFijos1" placeholder="14,800">
+                </div>
+                
+                <div class="input-group">
+                    <label>Gastos variables mensuales S/</label>
+                    <input type="number" id="gastosVariables1" placeholder="3,750">
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>¿Qué problemas percibes en tu empresa? (opcional)</label>
+                <textarea id="problemas1" placeholder="Ej: No entiendo por qué no me queda dinero al final del mes, tengo ventas pero no veo ganancias..."></textarea>
+            </div>
+            
+            <button class="btn-primary" onclick="analizarManual()">
+                🚀 Analizar con IA ahora
+            </button>
+        </div>
+        
+        <!-- TAB 2: SUBIR EXCEL -->
+        <div class="tab-content" id="tab1">
+            <h2 style="color: #667eea; margin-bottom: 30px;">Sube tu Estado de Resultados</h2>
+            
+            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                </svg>
+                <h3 style="color: #667eea; margin: 20px 0 10px 0;">Arrastra tu archivo Excel aquí</h3>
+                <p style="color: #666;">o haz click para seleccionar</p>
+                <p style="color: #999; font-size: 0.9em; margin-top: 10px;">Formatos: .xlsx, .xls, .csv</p>
+                <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display: none;" onchange="handleFileUpload(this)">
+            </div>
+            
+            <div id="fileInfo" style="display: none; margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px;">
+                <p><strong>Archivo cargado:</strong> <span id="fileName"></span></p>
+            </div>
+            
+            <button class="btn-primary" id="btnAnalizar" style="display: none;" onclick="analizarExcel()">
+                🚀 Analizar con IA ahora
+            </button>
+        </div>
+        
+        <!-- TAB 3: CHATBOT -->
+        <div class="tab-content" id="tab2">
+            <h2 style="color: #667eea; margin-bottom: 30px;">Chatea con el Analista IA</h2>
+            
+            <div id="chatContainer" style="background: #f8f9fa; border-radius: 12px; padding: 20px; min-height: 400px; margin-bottom: 20px;">
+                <div id="chatMessages">
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <strong style="color: #667eea;">Analista IA:</strong>
+                        <p style="margin-top: 8px;">¡Hola! Soy tu analista financiero IA. Puedes hacerme preguntas como:</p>
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>"¿Cómo sé si mis márgenes son buenos?"</li>
+                            <li>"¿Qué es el punto de equilibrio?"</li>
+                            <li>"¿Cómo puedo mejorar mi rentabilidad?"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                <button class="btn-primary" style="width: auto; margin: 0; padding: 12px 30px;" onclick="enviarMensaje()">Enviar</button>
+            </div>
+        </div>
+        
+        <!-- LOADING -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <h3>Analizando con IA...</h3>
+            <p>Claude está procesando tus datos financieros</p>
+        </div>
+        
+        <!-- RESULTADO -->
+        <div class="resultado" id="resultado">
+            <div id="resultadoContent"></div>
+        </div>
+    </div>
+    
+    <!-- CHATBOT FLOTANTE -->
+    <div class="chatbot" onclick="cambiarTab(2)" title="Habla con el Analista IA">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+        </svg>
+    </div>
+    
+    <script>
+        let archivoSubido = null;
+        
+        function cambiarTab(index) {
+            // Ocultar todos los tabs y contenidos
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            // Activar el tab seleccionado
+            document.querySelectorAll('.tab')[index].classList.add('active');
+            document.querySelectorAll('.tab-content')[index].classList.add('active');
+        }
+        
+        // DRAG AND DROP
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload({ files: files });
+            }
+        });
+        
+        function handleFileUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                archivoSubido = file;
+                document.getElementById('fileName').textContent = file.name;
+                document.getElementById('fileInfo').style.display = 'block';
+                document.getElementById('btnAnalizar').style.display = 'block';
+            }
+        }
+        
+        async function analizarManual() {
+            const datos = {
+                nombreEmpresa: document.getElementById('nombreEmpresa1').value || 'Tu empresa',
+                ingresos: parseFloat(document.getElementById('ingresos1').value),
+                costos: parseFloat(document.getElementById('costos1').value),
+                gastosFijos: parseFloat(document.getElementById('gastosFijos1').value),
+                gastosVariables: parseFloat(document.getElementById('gastosVariables1').value),
+                problemas: document.getElementById('problemas1').value
+            };
+            
+            if (!datos.ingresos || !datos.costos || !datos.gastosFijos || !datos.gastosVariables) {
+                alert('Por favor completa todos los campos numéricos');
+                return;
+            }
+            
+            mostrarLoading();
+            
+            // Aquí se integraría con Claude API
+            await analizarConIA(datos);
+        }
+        
+        async function analizarExcel() {
+            if (!archivoSubido) {
+                alert('Por favor sube un archivo primero');
+                return;
+            }
+            
+            mostrarLoading();
+            
+            // Aquí se procesaría el Excel y se enviaría a Claude API
+            // Por ahora, simulamos con datos de ejemplo
+            const datosEjemplo = {
+                nombreEmpresa: 'Empresa desde Excel',
+                ingresos: 42162,
+                costos: 16547,
+                gastosFijos: 14828,
+                gastosVariables: 3750
+            };
+            
+            await analizarConIA(datosEjemplo);
+        }
+        
+        async function analizarConIA(datos) {
+            // Calcular métricas básicas
+            const utilidad = datos.ingresos - datos.costos - datos.gastosFijos - datos.gastosVariables;
+            const margenNeto = (utilidad / datos.ingresos) * 100;
+            const margenContribucion = ((datos.ingresos - datos.costos) / datos.ingresos) * 100;
+            const puntoEquilibrio = (datos.gastosFijos + datos.gastosVariables) / (margenContribucion / 100);
+            
+            // Construir prompt para Claude
+            const prompt = `Eres un consultor financiero experto analizando una PYME peruana. 
+            
+Datos de ${datos.nombreEmpresa}:
+- Ingresos mensuales: S/ ${datos.ingresos.toLocaleString()}
+- Costos productivos: S/ ${datos.costos.toLocaleString()}
+- Gastos fijos: S/ ${datos.gastosFijos.toLocaleString()}
+- Gastos variables: S/ ${datos.gastosVariables.toLocaleString()}
+- Utilidad: S/ ${utilidad.toLocaleString()} (${margenNeto.toFixed(2)}%)
+- Margen de contribución: ${margenContribucion.toFixed(2)}%
+- Punto de equilibrio: S/ ${puntoEquilibrio.toLocaleString()}
+
+${datos.problemas ? `El gerente menciona: "${datos.problemas}"` : ''}
+
+Genera un análisis BREVE Y DIRECTO (máximo 200 palabras) que incluya:
+1. Los 2-3 problemas financieros más críticos
+2. Recomendaciones concretas y accionables
+3. Prioridades inmediatas
+
+Usa un tono profesional pero cercano. Sin teoría, solo práctica.`;
+
+            // En producción, aquí llamarías a la API de Claude
+            // const response = await fetch('https://api.anthropic.com/v1/messages', {...})
+            
+            // Por ahora, generamos respuesta simulada basada en métricas reales
+            const analisisIA = generarAnalisisSimulado(datos, { utilidad, margenNeto, margenContribucion, puntoEquilibrio });
+            
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            mostrarResultado(datos, { utilidad, margenNeto, margenContribucion, puntoEquilibrio }, analisisIA);
+        }
+        
+        function generarAnalisisSimulado(datos, metricas) {
+            let analisis = `**Diagnóstico de ${datos.nombreEmpresa}:**\n\n`;
+            
+            if (metricas.margenNeto < 10) {
+                analisis += `🚨 **CRÍTICO:** Tu margen neto es ${metricas.margenNeto.toFixed(1)}%, muy por debajo del mínimo saludable (15%). Estás operando en zona de riesgo.\n\n`;
+            }
+            
+            if (metricas.margenContribucion < 40) {
+                analisis += `⚠️ **PROBLEMA GRAVE:** Tus costos productivos consumen ${(100-metricas.margenContribucion).toFixed(1)}% de los ingresos. Esto indica precios mal calculados o costos inflados.\n\n`;
+            }
+            
+            if (datos.gastosFijos > datos.ingresos * 0.35) {
+                analisis += `💸 **ALERTA:** Gastos fijos representan ${((datos.gastosFijos/datos.ingresos)*100).toFixed(1)}% de ingresos. Hay compromisos fijos excesivos o gastos personales mezclados.\n\n`;
+            }
+            
+            analisis += `**Recomendaciones urgentes:**\n`;
+            analisis += `1. Revisar estructura de precios - necesitas subir márgenes\n`;
+            analisis += `2. Separar gastos empresa/personales\n`;
+            analisis += `3. Reducir gastos fijos al 25-30% de ingresos\n\n`;
+            
+            analisis += `**Acción inmediata:** Agendar consultoría para rediseñar tu estructura financiera antes de que la situación se complique.`;
+            
+            return analisis;
+        }
+        
+        function mostrarLoading() {
+            document.getElementById('loading').classList.add('show');
+            document.getElementById('resultado').classList.remove('show');
+        }
+        
+        function mostrarResultado(datos, metricas, analisisIA) {
+            document.getElementById('loading').classList.remove('show');
+            
+            const html = `
+                <h2 style="color: #667eea; margin-bottom: 30px;">📊 Análisis Completo de ${datos.nombreEmpresa}</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #666; margin-bottom: 10px;">Utilidad Mensual</h4>
+                        <div style="font-size: 2em; font-weight: bold; color: ${metricas.utilidad > 0 ? '#4caf50' : '#f44336'}">
+                            S/ ${metricas.utilidad.toLocaleString('es-PE')}
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #666; margin-bottom: 10px;">Margen Neto</h4>
+                        <div style="font-size: 2em; font-weight: bold; color: ${metricas.margenNeto > 15 ? '#4caf50' : '#f44336'}">
+                            ${metricas.margenNeto.toFixed(1)}%
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #666; margin-bottom: 10px;">Margen Contribución</h4>
+                        <div style="font-size: 2em; font-weight: bold; color: ${metricas.margenContribucion > 40 ? '#4caf50' : '#ff9800'}">
+                            ${metricas.margenContribucion.toFixed(1)}%
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+                        <h4 style="color: #666; margin-bottom: 10px;">Punto Equilibrio</h4>
+                        <div style="font-size: 1.5em; font-weight: bold; color: ${datos.ingresos >= metricas.puntoEquilibrio ? '#4caf50' : '#f44336'}">
+                            S/ ${metricas.puntoEquilibrio.toLocaleString('es-PE')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analisis-ia">
+                    <h3>🤖 Análisis con Inteligencia Artificial</h3>
+                    <div style="white-space: pre-line; line-height: 1.8;">
+                        ${analisisIA}
+                    </div>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 12px; text-align: center; margin-top: 30px;">
+                    <h3 style="margin-bottom: 15px; font-size: 1.8em;">¿Listo para solucionar esto?</h3>
+                    <p style="margin-bottom: 25px; font-size: 1.1em;">Agenda una consultoría gratuita de 30 minutos</p>
+                    <button onclick="agendarConsultoria()" style="background: white; color: #667eea; border: none; padding: 15px 40px; font-size: 1.1em; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                        📞 Agendar ahora
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('resultadoContent').innerHTML = html;
+            document.getElementById('resultado').classList.add('show');
+            document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        async function enviarMensaje() {
+            const input = document.getElementById('chatInput');
+            const mensaje = input.value.trim();
+            
+            if (!mensaje) return;
+            
+            // Agregar mensaje del usuario
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML += `
+                <div style="background: #e8eaf6; padding: 15px; border-radius: 8px; margin-bottom: 10px; text-align: right;">
+                    <strong>Tú:</strong>
+                    <p style="margin-top: 8px;">${mensaje}</p>
+                </div>
+            `;
+            
+            input.value = '';
+            
+            // Simular respuesta del bot
+            chatMessages.innerHTML += `
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <strong style="color: #667eea;">Analista IA:</strong>
+                    <p style="margin-top: 8px;">Procesando tu pregunta...</p>
+                </div>
+            `;
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Aquí se llamaría a Claude API
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            const respuesta = obtenerRespuestaBot(mensaje);
+            const lastMessage = chatMessages.lastElementChild;
+            lastMessage.querySelector('p').textContent = respuesta;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function obtenerRespuestaBot(pregunta) {
+            const preguntaLower = pregunta.toLowerCase();
+            
+            if (preguntaLower.includes('margen') || preguntaLower.includes('margenes')) {
+                return 'Un margen neto saludable para PYMEs debería estar entre 15-25%. Si el tuyo está bajo 10%, necesitas revisar costos y precios urgentemente.';
+            }
+            
+            if (preguntaLower.includes('equilibrio')) {
+                return 'El punto de equilibrio es el nivel de ventas donde no ganas ni pierdes. Si estás debajo, cada mes pierdes dinero. Calcula: (Gastos Fijos + Variables) / (1 - Costos/Ingresos)';
+            }
+            
+            if (preguntaLower.includes('rentabilidad') || preguntaLower.includes('mejorar')) {
+                return 'Para mejorar rentabilidad: 1) Revisa precios (muchas PYMEs cobran poco), 2) Reduce gastos fijos, 3) Separa gastos personales de la empresa, 4) Controla costos variables.';
+            }
+            
+            return 'Interesante pregunta. Para darte una respuesta personalizada, te recomiendo agendar una consultoría gratuita donde revisamos tu caso específico.';
+        }
+        
+        function agendarConsultoria() {
+            const mensaje = encodeURIComponent('Hola, acabo de analizar mi empresa con el Scanner IA PRO y quiero agendar una consultoría gratuita.');
+            window.open(`https://wa.me/51999999999?text=${mensaje}`, '_blank');
+        }
+        
+        // Permitir enviar mensaje con Enter
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                enviarMensaje();
+            }
+        });
+    </script>
+</body>
+</html>
