@@ -3,21 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Scanner Financiero IA PRO - Análisis Profundo</title>
+    <title>Scanner Financiero PRO - Diagnóstico Financiero</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 1000px;
             margin: 0 auto;
@@ -26,32 +22,18 @@
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
         }
-        
+
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 40px;
             text-align: center;
         }
-        
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .header .badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 8px 20px;
-            border-radius: 20px;
-            margin-top: 10px;
-        }
-        
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid #e0e0e0;
-        }
-        
+
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+
+        .tabs { display: flex; border-bottom: 2px solid #e0e0e0; }
+
         .tab {
             flex: 1;
             padding: 20px;
@@ -62,77 +44,67 @@
             font-size: 1.1em;
             transition: all 0.3s;
         }
-        
-        .tab:hover {
-            background: #e9ecef;
-        }
-        
+
+        .tab:hover { background: #e9ecef; }
+
         .tab.active {
             background: white;
             color: #667eea;
             font-weight: bold;
             border-bottom: 3px solid #667eea;
         }
-        
-        .tab-content {
-            display: none;
-            padding: 40px;
-        }
-        
+
+        .tab-content { display: none; padding: 40px; }
+
         .tab-content.active {
             display: block;
             animation: fadeIn 0.3s;
         }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-        }
-        
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .input-group { margin-bottom: 20px; }
+
         .input-group label {
             display: block;
             margin-bottom: 8px;
             color: #333;
             font-weight: 600;
         }
-        
-        .input-group input, .input-group textarea {
+
+        .input-group input,
+        .input-group textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
             font-size: 1em;
+            transition: border-color 0.2s;
         }
-        
+
+        .input-group input:focus,
+        .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
         .input-group textarea {
             min-height: 100px;
             resize: vertical;
             font-family: inherit;
         }
-        
-        .upload-area {
-            border: 2px dashed #667eea;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
-        
-        .upload-area:hover {
-            background: #f8f9fa;
-            border-color: #764ba2;
+
+        @media (max-width: 768px) {
+            .two-column { grid-template-columns: 1fr; }
+            .header h1 { font-size: 1.8em; }
         }
-        
-        .upload-area.dragover {
-            background: #e8eaf6;
-            border-color: #667eea;
-        }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -143,24 +115,28 @@
             cursor: pointer;
             width: 100%;
             margin-top: 20px;
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .loading {
             display: none;
             text-align: center;
             padding: 40px;
         }
-        
-        .loading.show {
-            display: block;
-        }
-        
+
+        .loading.show { display: block; }
+
         .spinner {
             border: 4px solid #f3f3f3;
             border-top: 4px solid #667eea;
@@ -170,58 +146,34 @@
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .resultado {
-            display: none;
-        }
-        
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .resultado { display: none; }
+
         .resultado.show {
             display: block;
             animation: slideIn 0.5s;
         }
-        
+
         @keyframes slideIn {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        
-        .analisis-ia {
+
+        .analisis-box {
             background: #f8f9fa;
             padding: 30px;
             border-radius: 12px;
             margin-top: 20px;
             border-left: 4px solid #667eea;
         }
-        
-        .analisis-ia h3 {
+
+        .analisis-box h3 {
             color: #667eea;
             margin-bottom: 15px;
         }
-        
-        .analisis-ia p {
-            line-height: 1.8;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .recomendacion {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border-left: 4px solid #4caf50;
-        }
-        
-        .recomendacion h4 {
-            color: #4caf50;
-            margin-bottom: 10px;
-        }
-        
+
         .chatbot {
             position: fixed;
             bottom: 30px;
@@ -236,97 +188,76 @@
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             transition: transform 0.3s;
+            z-index: 100;
         }
-        
-        .chatbot:hover {
-            transform: scale(1.1);
-        }
-        
-        .chatbot svg {
-            width: 30px;
-            height: 30px;
-            fill: white;
-        }
-        
-        .two-column {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .two-column {
-                grid-template-columns: 1fr;
-            }
-        }
+
+        .chatbot:hover { transform: scale(1.1); }
+        .chatbot svg { width: 30px; height: 30px; fill: white; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>🤖 Scanner Financiero IA PRO</h1>
-            <div class="badge">Análisis con Inteligencia Artificial Claude</div>
-            <p style="margin-top: 15px; opacity: 0.9;">Sube tus datos y obtén un análisis financiero profesional en minutos</p>
+            <h1>🤖 Scanner Financiero PRO</h1>
+            <p style="margin-top: 15px; opacity: 0.9;">Analiza tu empresa y obtén un diagnóstico profesional en minutos</p>
         </div>
-        
+
         <div class="tabs">
             <button class="tab active" onclick="cambiarTab(0)">📊 Ingreso Manual</button>
-            <button class="tab" onclick="cambiarTab(1)">💬 Chatbot IA</button>
+            <button class="tab" onclick="cambiarTab(1)">💬 Chatbot</button>
         </div>
-        
+
         <!-- TAB 1: INGRESO MANUAL -->
         <div class="tab-content active" id="tab0">
             <h2 style="color: #667eea; margin-bottom: 30px;">Ingresa los datos de tu empresa</h2>
-            
+
             <div class="input-group">
                 <label>Nombre de tu empresa</label>
                 <input type="text" id="nombreEmpresa1" placeholder="Nombre de tu empresa">
             </div>
-            
+
             <div class="two-column">
                 <div class="input-group">
-                    <label>Ingresos mensuales promedio (sin IGV) S/</label>
-                    <input type="number" id="ingresos1" placeholder="0">
+                    <label>Ingresos mensuales S/ <span style="font-size:0.85em; color:#888; font-weight:normal;">(sin IGV)</span></label>
+                    <input type="number" id="ingresos1" placeholder="0" min="0">
                 </div>
-                
                 <div class="input-group">
-                    <label>Costos productivos mensuales S/</label>
-                    <input type="number" id="costos1" placeholder="0">
+                    <label>Costos productivos S/ <span style="font-size:0.85em; color:#888; font-weight:normal;">(sin IGV)</span></label>
+                    <input type="number" id="costos1" placeholder="0" min="0">
                 </div>
             </div>
-            
+
             <div class="two-column">
                 <div class="input-group">
-                    <label>Gastos fijos mensuales S/</label>
-                    <input type="number" id="gastosFijos1" placeholder="0">
+                    <label>Gastos fijos mensuales S/ <span style="font-size:0.85em; color:#888; font-weight:normal;">(sin IGV)</span></label>
+                    <input type="number" id="gastosFijos1" placeholder="0" min="0">
                 </div>
-                
                 <div class="input-group">
-                    <label>Gastos variables mensuales S/</label>
-                    <input type="number" id="gastosVariables1" placeholder="0">
+                    <label>Gastos variables mensuales S/ <span style="font-size:0.85em; color:#888; font-weight:normal;">(sin IGV)</span></label>
+                    <input type="number" id="gastosVariables1" placeholder="0" min="0">
                 </div>
             </div>
-            
+
             <div class="input-group">
-                <label>¿Qué problemas percibes en tu empresa? (opcional)</label>
+                <label>¿Qué problemas percibes en tu empresa? <span style="font-size:0.85em; color:#888; font-weight:normal;">(opcional)</span></label>
                 <textarea id="problemas1" placeholder="Ej: No entiendo por qué no me queda dinero al final del mes, tengo ventas pero no veo ganancias..."></textarea>
             </div>
-            
-            <button class="btn-primary" onclick="analizarManual()">
-                🚀 Analizar con IA ahora
+
+            <button class="btn-primary" id="btnAnalizar" onclick="analizarManual()">
+                🚀 Obtener mi diagnóstico
             </button>
         </div>
-        
+
         <!-- TAB 2: CHATBOT -->
         <div class="tab-content" id="tab1">
-            <h2 style="color: #667eea; margin-bottom: 30px;">Chatea con el Analista IA</h2>
-            
-            <div id="chatContainer" style="background: #f8f9fa; border-radius: 12px; padding: 20px; min-height: 400px; margin-bottom: 20px;">
+            <h2 style="color: #667eea; margin-bottom: 30px;">Chatea con el Analista</h2>
+
+            <div id="chatContainer" style="background: #f8f9fa; border-radius: 12px; padding: 20px; min-height: 400px; max-height: 500px; overflow-y: auto; margin-bottom: 20px;">
                 <div id="chatMessages">
                     <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-                        <strong style="color: #667eea;">Analista IA:</strong>
-                        <p style="margin-top: 8px;">¡Hola! Soy tu analista financiero IA. Puedes hacerme preguntas como:</p>
-                        <ul style="margin-top: 10px; margin-left: 20px;">
+                        <strong style="color: #667eea;">Analista:</strong>
+                        <p style="margin-top: 8px;">¡Hola! Soy tu analista financiero. Puedes hacerme preguntas como:</p>
+                        <ul style="margin-top: 10px; margin-left: 20px; line-height: 2;">
                             <li>"¿Cómo sé si mis márgenes son buenos?"</li>
                             <li>"¿Qué es el punto de equilibrio?"</li>
                             <li>"¿Cómo puedo mejorar mi rentabilidad?"</li>
@@ -334,33 +265,33 @@
                     </div>
                 </div>
             </div>
-            
+
             <div style="display: flex; gap: 10px;">
-                <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px;">
+                <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." style="flex: 1; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 1em;">
                 <button class="btn-primary" style="width: auto; margin: 0; padding: 12px 30px;" onclick="enviarMensaje()">Enviar</button>
             </div>
         </div>
-        
+
         <!-- LOADING -->
         <div class="loading" id="loading">
             <div class="spinner"></div>
-            <h3>Analizando con IA...</h3>
-            <p>Claude está procesando tus datos financieros</p>
+            <h3>Analizando tu empresa...</h3>
+            <p>Generando tu diagnóstico financiero personalizado</p>
         </div>
-        
+
         <!-- RESULTADO -->
         <div class="resultado" id="resultado">
-            <div id="resultadoContent"></div>
+            <div id="resultadoContent" style="padding: 40px;"></div>
         </div>
     </div>
-    
-    <!-- CHATBOT FLOTANTE -->
-    <div class="chatbot" onclick="cambiarTab(2)" title="Habla con el Analista IA">
+
+    <!-- BOTÓN FLOTANTE CHATBOT -->
+    <div class="chatbot" onclick="cambiarTab(1)" title="Habla con el Analista">
         <svg viewBox="0 0 24 24">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
         </svg>
     </div>
-    
+
     <script>
         function cambiarTab(index) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -368,228 +299,222 @@
             document.querySelectorAll('.tab')[index].classList.add('active');
             document.querySelectorAll('.tab-content')[index].classList.add('active');
         }
-        
+
         async function analizarManual() {
             const datos = {
-                nombreEmpresa: document.getElementById('nombreEmpresa1').value || 'Tu empresa',
-                ingresos: parseFloat(document.getElementById('ingresos1').value),
-                costos: parseFloat(document.getElementById('costos1').value),
-                gastosFijos: parseFloat(document.getElementById('gastosFijos1').value),
-                gastosVariables: parseFloat(document.getElementById('gastosVariables1').value),
-                problemas: document.getElementById('problemas1').value
+                nombreEmpresa: document.getElementById('nombreEmpresa1').value.trim() || 'Tu empresa',
+                ingresos: parseFloat(document.getElementById('ingresos1').value) || 0,
+                costos: parseFloat(document.getElementById('costos1').value) || 0,
+                gastosFijos: parseFloat(document.getElementById('gastosFijos1').value) || 0,
+                gastosVariables: parseFloat(document.getElementById('gastosVariables1').value) || 0,
+                problemas: document.getElementById('problemas1').value.trim()
             };
-            
+
             if (!datos.ingresos || !datos.costos || !datos.gastosFijos || !datos.gastosVariables) {
-                alert('Por favor completa todos los campos numéricos');
+                alert('Por favor completa todos los campos numéricos.');
                 return;
             }
-            
+
+            if (datos.ingresos <= 0 || datos.costos < 0 || datos.gastosFijos < 0 || datos.gastosVariables < 0) {
+                alert('Los valores deben ser positivos. Los ingresos deben ser mayores a 0.');
+                return;
+            }
+
+            const btn = document.getElementById('btnAnalizar');
+            btn.disabled = true;
             mostrarLoading();
-            
-            // Aquí se integraría con Claude API
             await analizarConIA(datos);
+            btn.disabled = false;
         }
-        
-        
+
         async function analizarConIA(datos) {
-            // Calcular métricas básicas
             const utilidad = datos.ingresos - datos.costos - datos.gastosFijos - datos.gastosVariables;
             const margenNeto = (utilidad / datos.ingresos) * 100;
             const margenContribucion = ((datos.ingresos - datos.costos) / datos.ingresos) * 100;
-            const puntoEquilibrio = (datos.gastosFijos + datos.gastosVariables) / (margenContribucion / 100);
-            
-            // Construir prompt para Claude
-            const prompt = `Eres un consultor financiero experto analizando una PYME peruana. 
-            
+            const puntoEquilibrio = margenContribucion > 0
+                ? (datos.gastosFijos + datos.gastosVariables) / (margenContribucion / 100)
+                : Infinity;
+
+            const prompt = `Eres un consultor financiero experto analizando una PYME peruana. Todos los valores son SIN IGV.
+
 Datos de ${datos.nombreEmpresa}:
-- Ingresos mensuales: S/ ${datos.ingresos.toLocaleString()}
-- Costos productivos: S/ ${datos.costos.toLocaleString()}
-- Gastos fijos: S/ ${datos.gastosFijos.toLocaleString()}
-- Gastos variables: S/ ${datos.gastosVariables.toLocaleString()}
-- Utilidad: S/ ${utilidad.toLocaleString()} (${margenNeto.toFixed(2)}%)
+- Ingresos mensuales: S/ ${datos.ingresos.toLocaleString('es-PE')}
+- Costos productivos: S/ ${datos.costos.toLocaleString('es-PE')}
+- Gastos fijos: S/ ${datos.gastosFijos.toLocaleString('es-PE')}
+- Gastos variables: S/ ${datos.gastosVariables.toLocaleString('es-PE')}
+- Utilidad: S/ ${Math.round(utilidad).toLocaleString('es-PE')} (${margenNeto.toFixed(2)}%)
 - Margen de contribución: ${margenContribucion.toFixed(2)}%
-- Punto de equilibrio: S/ ${puntoEquilibrio.toLocaleString()}
+- Punto de equilibrio: S/ ${isFinite(puntoEquilibrio) ? Math.round(puntoEquilibrio).toLocaleString('es-PE') : 'No calculable'}
 
 ${datos.problemas ? `El gerente menciona: "${datos.problemas}"` : ''}
 
 Genera un análisis BREVE Y DIRECTO (máximo 200 palabras) que incluya:
-1. Los 2-3 problemas financieros más críticos
+1. Los 2-3 problemas financieros más críticos basados en estos números específicos
 2. Recomendaciones concretas y accionables
 3. Prioridades inmediatas
 
-Usa un tono profesional pero cercano. Sin teoría, solo práctica.`;
+Usa un tono profesional pero cercano. Sin teoría, solo práctica. Personaliza el análisis a los números reales de esta empresa.`;
 
-            // Llamada real a Claude API
             let analisisIA = '';
             try {
                 const response = await fetch('https://api.anthropic.com/v1/messages', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true'
+                    },
                     body: JSON.stringify({
-                        model: 'claude-sonnet-4-20250514',
+                        model: 'claude-sonnet-4-5',
                         max_tokens: 1000,
                         messages: [{ role: 'user', content: prompt }]
                     })
                 });
                 const result = await response.json();
-                analisisIA = result.content[0].text;
+                if (result.content && result.content[0] && result.content[0].text) {
+                    analisisIA = result.content[0].text;
+                } else {
+                    throw new Error('Respuesta inválida');
+                }
             } catch(e) {
                 analisisIA = generarAnalisisSimulado(datos, { utilidad, margenNeto, margenContribucion, puntoEquilibrio });
             }
-            
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
+
             mostrarResultado(datos, { utilidad, margenNeto, margenContribucion, puntoEquilibrio }, analisisIA);
         }
-        
+
         function generarAnalisisSimulado(datos, metricas) {
             const { utilidad, margenNeto, margenContribucion, puntoEquilibrio } = metricas;
             const porcGastosFijos = (datos.gastosFijos / datos.ingresos) * 100;
             const porcCostos = (datos.costos / datos.ingresos) * 100;
             const porcGastosVar = (datos.gastosVariables / datos.ingresos) * 100;
-            const cubrePE = datos.ingresos >= puntoEquilibrio;
+            const cubrePE = isFinite(puntoEquilibrio) && datos.ingresos >= puntoEquilibrio;
             const excedentePE = datos.ingresos - puntoEquilibrio;
 
             let problemas = [];
             let recomendaciones = [];
             let nivel = '';
 
-            // --- DIAGNÓSTICO DE SALUD FINANCIERA ---
-            if (margenNeto >= 20) {
-                nivel = '🟢 SALUDABLE';
-            } else if (margenNeto >= 10) {
-                nivel = '🟡 MODERADO — hay margen de mejora';
-            } else if (margenNeto >= 0) {
-                nivel = '🟠 EN RIESGO — necesita acción urgente';
-            } else {
-                nivel = '🔴 CRÍTICO — estás perdiendo dinero';
-            }
+            if (margenNeto >= 20) nivel = '🟢 SALUDABLE';
+            else if (margenNeto >= 10) nivel = '🟡 MODERADO — hay margen de mejora';
+            else if (margenNeto >= 0) nivel = '🟠 EN RIESGO — necesita acción urgente';
+            else nivel = '🔴 CRÍTICO — estás perdiendo dinero';
 
-            // --- ANÁLISIS DE COSTOS PRODUCTIVOS ---
             if (porcCostos > 60) {
-                problemas.push(`🚨 Costos productivos muy altos: consumen el ${porcCostos.toFixed(1)}% de tus ingresos (lo saludable es menos del 50%). Esto indica que tus precios son bajos o tus costos de producción están inflados.`);
-                recomendaciones.push(`Revisa urgentemente tus precios de venta — probablemente estás vendiendo barato. Calcula el costo real de cada producto/servicio y ajusta el precio con un margen mínimo del 40%.`);
+                problemas.push(`🚨 Costos productivos muy altos: consumen el ${porcCostos.toFixed(1)}% de tus ingresos (lo saludable es menos del 50%). Tus precios pueden ser bajos o los costos están inflados.`);
+                recomendaciones.push(`Revisa tus precios de venta. Calcula el costo real de cada producto/servicio y ajusta con un margen mínimo del 40%.`);
             } else if (porcCostos > 50) {
                 problemas.push(`⚠️ Costos productivos elevados: ${porcCostos.toFixed(1)}% de los ingresos. Está en el límite, conviene reducirlos.`);
-                recomendaciones.push(`Negocia mejores precios con proveedores o busca alternativas más económicas para bajar costos productivos al 45-50%.`);
+                recomendaciones.push(`Negocia con proveedores o busca alternativas más económicas para bajar costos al 45-50%.`);
             }
 
-            // --- ANÁLISIS DE GASTOS FIJOS ---
             if (porcGastosFijos > 40) {
-                problemas.push(`💸 Gastos fijos excesivos: representan el ${porcGastosFijos.toFixed(1)}% de tus ingresos. Esto es muy peligroso porque son compromisos que pagas aunque no vendas nada.`);
-                recomendaciones.push(`Identifica qué gastos fijos puedes eliminar o reducir: alquileres, sueldos fijos, suscripciones. La meta es llevarlos por debajo del 30% de ingresos.`);
+                problemas.push(`💸 Gastos fijos excesivos: ${porcGastosFijos.toFixed(1)}% de tus ingresos. Son compromisos que pagas aunque no vendas nada.`);
+                recomendaciones.push(`Identifica qué gastos fijos puedes reducir: alquileres, sueldos, suscripciones. Meta: llevarlos por debajo del 30%.`);
             } else if (porcGastosFijos > 30) {
                 problemas.push(`⚠️ Gastos fijos moderadamente altos: ${porcGastosFijos.toFixed(1)}% de ingresos. Monitorea de cerca.`);
-                recomendaciones.push(`Controla que los gastos fijos no sigan creciendo. Cualquier nuevo gasto fijo debe estar justificado con un aumento de ingresos proporcional.`);
+                recomendaciones.push(`No permitas que los gastos fijos sigan creciendo sin un aumento proporcional de ingresos.`);
             }
 
-            // --- ANÁLISIS DE PUNTO DE EQUILIBRIO ---
-            if (!cubrePE) {
-                const faltante = puntoEquilibrio - datos.ingresos;
-                problemas.push(`🔴 NO estás cubriendo tu punto de equilibrio. Te faltan S/ ${faltante.toLocaleString('es-PE')} en ventas para no perder dinero. Cada mes que pase así, el negocio se descapitaliza.`);
-                recomendaciones.push(`Prioridad #1: aumentar ventas en S/ ${faltante.toLocaleString('es-PE')} mensuales o reducir costos en esa misma cantidad. Sin esto, el negocio no es sostenible.`);
-            } else {
+            if (!cubrePE && isFinite(puntoEquilibrio)) {
+                const faltante = Math.round(puntoEquilibrio - datos.ingresos);
+                problemas.push(`🔴 NO estás cubriendo tu punto de equilibrio. Te faltan S/ ${faltante.toLocaleString('es-PE')} en ventas para no perder dinero.`);
+                recomendaciones.push(`Prioridad #1: aumentar ventas en S/ ${faltante.toLocaleString('es-PE')} mensuales o reducir costos en esa misma cantidad.`);
+            } else if (isFinite(excedentePE) && isFinite(puntoEquilibrio)) {
                 const porcentajeSobre = ((excedentePE / puntoEquilibrio) * 100).toFixed(1);
-                if (excedentePE > 0 && parseFloat(porcentajeSobre) < 15) {
-                    problemas.push(`⚠️ Estás sobre el punto de equilibrio pero con muy poco margen de seguridad (solo ${porcentajeSobre}% sobre el PE = S/ ${excedentePE.toLocaleString('es-PE')}). Cualquier baja en ventas te llevaría a pérdidas.`);
-                    recomendaciones.push(`Trabaja en aumentar el colchón sobre el punto de equilibrio. Lo ideal es estar al menos 25% por encima para tener seguridad ante imprevistos.`);
+                if (parseFloat(porcentajeSobre) < 15 && excedentePE > 0) {
+                    problemas.push(`⚠️ Estás sobre el punto de equilibrio pero con solo ${porcentajeSobre}% de margen de seguridad. Una baja en ventas te llevaría a pérdidas.`);
+                    recomendaciones.push(`Trabaja en aumentar el colchón sobre el punto de equilibrio. Lo ideal es estar al menos 25% por encima.`);
                 }
             }
 
-            // --- ANÁLISIS DE UTILIDAD ---
             if (utilidad < 0) {
-                problemas.push(`🔴 Estás generando pérdidas de S/ ${Math.abs(utilidad).toLocaleString('es-PE')} al mes. Si esto continúa, el negocio no podrá sostenerse.`);
+                problemas.push(`🔴 Estás generando pérdidas de S/ ${Math.abs(Math.round(utilidad)).toLocaleString('es-PE')} al mes. Si esto continúa, el negocio no podrá sostenerse.`);
             } else if (utilidad === 0) {
                 problemas.push(`⚠️ Tu negocio está en punto muerto: no pierdes pero tampoco ganas. No hay retorno para ti como dueño/a.`);
             }
 
-            // --- ANÁLISIS DE GASTOS VARIABLES ---
             if (porcGastosVar > 20) {
-                problemas.push(`📊 Gastos variables altos: ${porcGastosVar.toFixed(1)}% de ingresos. Revisa si hay gastos variables que en realidad son fijos mal clasificados.`);
-                recomendaciones.push(`Separa claramente gastos fijos de variables. Los gastos variables deben crecer solo cuando crecen las ventas, no de forma independiente.`);
+                problemas.push(`📊 Gastos variables altos: ${porcGastosVar.toFixed(1)}% de ingresos. Revisa si hay gastos que en realidad son fijos mal clasificados.`);
+                recomendaciones.push(`Los gastos variables deben crecer solo cuando crecen las ventas, no de forma independiente.`);
             }
 
-            // Si todo está bien
             if (problemas.length === 0) {
                 problemas.push(`✅ Tu estructura financiera está bien equilibrada. El negocio es rentable y cubre con holgura el punto de equilibrio.`);
-                recomendaciones.push(`Enfócate ahora en escalar: reinvierte parte de la utilidad en marketing o capacidad productiva para crecer manteniendo estos márgenes.`);
+                recomendaciones.push(`Enfócate en escalar: reinvierte parte de la utilidad en marketing o capacidad productiva para crecer manteniendo estos márgenes.`);
             }
 
-            // --- CONSTRUIR TEXTO FINAL ---
             let analisis = `📋 DIAGNÓSTICO FINANCIERO — ${datos.nombreEmpresa}\n`;
             analisis += `Estado general: ${nivel}\n\n`;
-
-            analisis += `📊 RESUMEN DE TUS NÚMEROS:\n`;
+            analisis += `📊 RESUMEN:\n`;
             analisis += `• Ingresos: S/ ${datos.ingresos.toLocaleString('es-PE')} → Gastos totales: S/ ${(datos.costos + datos.gastosFijos + datos.gastosVariables).toLocaleString('es-PE')}\n`;
-            analisis += `• Lo que te queda (utilidad): S/ ${utilidad.toLocaleString('es-PE')} (${margenNeto.toFixed(1)}% de margen)\n`;
-            analisis += `• Punto de equilibrio: S/ ${puntoEquilibrio.toLocaleString('es-PE')} — ${cubrePE ? `✅ lo estás cubriendo` : `❌ NO lo estás cubriendo`}\n\n`;
-
+            analisis += `• Utilidad: S/ ${Math.round(utilidad).toLocaleString('es-PE')} (${margenNeto.toFixed(1)}% de margen neto)\n`;
+            if (isFinite(puntoEquilibrio)) {
+                analisis += `• Punto de equilibrio: S/ ${Math.round(puntoEquilibrio).toLocaleString('es-PE')} — ${cubrePE ? '✅ lo estás cubriendo' : '❌ NO lo estás cubriendo'}\n\n`;
+            }
             analisis += `🔍 PROBLEMAS IDENTIFICADOS:\n`;
             problemas.forEach((p, i) => { analisis += `${i+1}. ${p}\n`; });
-
-            analisis += `\n💡 RECOMENDACIONES CONCRETAS:\n`;
+            analisis += `\n💡 RECOMENDACIONES:\n`;
             recomendaciones.forEach((r, i) => { analisis += `${i+1}. ${r}\n`; });
 
             if (datos.problemas) {
-                analisis += `\n🗣️ SOBRE LO QUE MENCIONAS ("${datos.problemas}"):\n`;
-                if (utilidad < datos.ingresos * 0.1) {
-                    analisis += `Es normal que no veas el dinero: tu margen neto de ${margenNeto.toFixed(1)}% significa que de cada S/ 100 que vendes, solo te quedan S/ ${margenNeto.toFixed(0)}. El resto se va en costos y gastos. La solución está en reducir esos gastos o subir precios.`;
+                analisis += `\n🗣️ SOBRE LO QUE MENCIONAS:\n`;
+                if (margenNeto < 10) {
+                    analisis += `Es normal que no veas el dinero: tu margen neto de ${margenNeto.toFixed(1)}% significa que de cada S/ 100 que vendes, solo te quedan S/ ${margenNeto.toFixed(0)}. La solución está en reducir gastos o subir precios.`;
                 } else {
-                    analisis += `Tus números muestran que el negocio genera utilidad. El problema puede ser de flujo de caja (el dinero entra y sale en momentos diferentes) o de mezcla de gastos personales con los del negocio.`;
+                    analisis += `Tus números muestran que el negocio genera utilidad. El problema puede ser de flujo de caja o mezcla de gastos personales con los del negocio.`;
                 }
             }
 
             return analisis;
         }
-        
+
         function mostrarLoading() {
             document.getElementById('loading').classList.add('show');
             document.getElementById('resultado').classList.remove('show');
         }
-        
+
         function mostrarResultado(datos, metricas, analisisIA) {
             document.getElementById('loading').classList.remove('show');
-            
+            const { utilidad, margenNeto, margenContribucion, puntoEquilibrio } = metricas;
+
             const html = `
-                <h2 style="color: #667eea; margin-bottom: 30px;">📊 Análisis Completo de ${datos.nombreEmpresa}</h2>
-                
+                <h2 style="color: #667eea; margin-bottom: 30px;">📊 Diagnóstico de ${datos.nombreEmpresa}</h2>
+
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
                         <h4 style="color: #666; margin-bottom: 10px;">Utilidad Mensual</h4>
-                        <div style="font-size: 2em; font-weight: bold; color: ${metricas.utilidad > 0 ? '#4caf50' : '#f44336'}">
-                            S/ ${metricas.utilidad.toLocaleString('es-PE')}
+                        <div style="font-size: 2em; font-weight: bold; color: ${utilidad > 0 ? '#4caf50' : '#f44336'}">
+                            S/ ${Math.round(utilidad).toLocaleString('es-PE')}
                         </div>
                     </div>
-                    
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
                         <h4 style="color: #666; margin-bottom: 10px;">Margen Neto</h4>
-                        <div style="font-size: 2em; font-weight: bold; color: ${metricas.margenNeto > 15 ? '#4caf50' : '#f44336'}">
-                            ${metricas.margenNeto.toFixed(1)}%
+                        <div style="font-size: 2em; font-weight: bold; color: ${margenNeto > 15 ? '#4caf50' : '#f44336'}">
+                            ${margenNeto.toFixed(1)}%
                         </div>
                     </div>
-                    
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
                         <h4 style="color: #666; margin-bottom: 10px;">Margen Contribución</h4>
-                        <div style="font-size: 2em; font-weight: bold; color: ${metricas.margenContribucion > 40 ? '#4caf50' : '#ff9800'}">
-                            ${metricas.margenContribucion.toFixed(1)}%
+                        <div style="font-size: 2em; font-weight: bold; color: ${margenContribucion > 40 ? '#4caf50' : '#ff9800'}">
+                            ${margenContribucion.toFixed(1)}%
                         </div>
                     </div>
-                    
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
                         <h4 style="color: #666; margin-bottom: 10px;">Punto Equilibrio</h4>
-                        <div style="font-size: 1.5em; font-weight: bold; color: ${datos.ingresos >= metricas.puntoEquilibrio ? '#4caf50' : '#f44336'}">
-                            S/ ${metricas.puntoEquilibrio.toLocaleString('es-PE')}
+                        <div style="font-size: 1.5em; font-weight: bold; color: ${datos.ingresos >= puntoEquilibrio ? '#4caf50' : '#f44336'}">
+                            ${isFinite(puntoEquilibrio) ? 'S/ ' + Math.round(puntoEquilibrio).toLocaleString('es-PE') : 'N/A'}
                         </div>
                     </div>
                 </div>
-                
-                <div class="analisis-ia">
-                    <h3>🤖 Análisis con Inteligencia Artificial</h3>
-                    <div style="white-space: pre-line; line-height: 1.8;">
+
+                <div class="analisis-box">
+                    <h3>📋 Diagnóstico Financiero</h3>
+                    <div style="white-space: pre-line; line-height: 1.8; color: #333;">
                         ${analisisIA}
                     </div>
                 </div>
-                
+
                 <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 12px; text-align: center; margin-top: 30px;">
                     <h3 style="margin-bottom: 15px; font-size: 1.8em;">¿Listo para solucionar esto?</h3>
                     <p style="margin-bottom: 25px; font-size: 1.1em;">Agenda una consultoría gratuita de 30 minutos</p>
@@ -602,19 +527,17 @@ Usa un tono profesional pero cercano. Sin teoría, solo práctica.`;
                     </button>
                 </div>
             `;
-            
+
             document.getElementById('resultadoContent').innerHTML = html;
             document.getElementById('resultado').classList.add('show');
             document.getElementById('resultado').scrollIntoView({ behavior: 'smooth' });
         }
-        
+
         async function enviarMensaje() {
             const input = document.getElementById('chatInput');
             const mensaje = input.value.trim();
-            
             if (!mensaje) return;
-            
-            // Agregar mensaje del usuario
+
             const chatMessages = document.getElementById('chatMessages');
             chatMessages.innerHTML += `
                 <div style="background: #e8eaf6; padding: 15px; border-radius: 8px; margin-bottom: 10px; text-align: right;">
@@ -622,80 +545,87 @@ Usa un tono profesional pero cercano. Sin teoría, solo práctica.`;
                     <p style="margin-top: 8px;">${mensaje}</p>
                 </div>
             `;
-            
+
             input.value = '';
-            
-            // Simular respuesta del bot
-            chatMessages.innerHTML += `
-                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-                    <strong style="color: #667eea;">Analista IA:</strong>
-                    <p style="margin-top: 8px;">Procesando tu pregunta...</p>
-                </div>
-            `;
-            
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            // Aquí se llamaría a Claude API
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            
-            const respuesta = obtenerRespuestaBot(mensaje);
-            const lastMessage = chatMessages.lastElementChild;
-            lastMessage.querySelector('p').textContent = respuesta;
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            input.disabled = true;
+
+            const loadingMsg = document.createElement('div');
+            loadingMsg.style.cssText = 'background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px;';
+            loadingMsg.innerHTML = `<strong style="color: #667eea;">Analista:</strong><p style="margin-top: 8px; color: #999;">✍️ Procesando tu pregunta...</p>`;
+            chatMessages.appendChild(loadingMsg);
+
+            const chatContainer = document.getElementById('chatContainer');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            let respuesta = '';
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'anthropic-version': '2023-06-01',
+                        'anthropic-dangerous-direct-browser-access': 'true'
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-5',
+                        max_tokens: 600,
+                        system: 'Eres un consultor financiero experto en PYMEs peruanas. Responde de forma concisa, práctica y directa. Máximo 150 palabras por respuesta. Usa ejemplos concretos con soles peruanos cuando sea útil. Sin teoría innecesaria.',
+                        messages: [{ role: 'user', content: mensaje }]
+                    })
+                });
+                const result = await response.json();
+                if (result.content && result.content[0] && result.content[0].text) {
+                    respuesta = result.content[0].text;
+                } else {
+                    throw new Error('Sin respuesta');
+                }
+            } catch(e) {
+                respuesta = obtenerRespuestaFallback(mensaje);
+            }
+
+            loadingMsg.querySelector('p').textContent = respuesta;
+            loadingMsg.querySelector('p').style.color = '#333';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            input.disabled = false;
+            input.focus();
         }
-        
-        function obtenerRespuestaBot(pregunta) {
-            const preguntaLower = pregunta.toLowerCase();
-            
-            if (preguntaLower.includes('margen') || preguntaLower.includes('margenes')) {
-                return 'Un margen neto saludable para PYMEs debería estar entre 15-25%. Si el tuyo está bajo 10%, necesitas revisar costos y precios urgentemente.';
-            }
-            
-            if (preguntaLower.includes('equilibrio')) {
-                return 'El punto de equilibrio es el nivel de ventas donde no ganas ni pierdes. Si estás debajo, cada mes pierdes dinero. Calcula: (Gastos Fijos + Variables) / (1 - Costos/Ingresos)';
-            }
-            
-            if (preguntaLower.includes('rentabilidad') || preguntaLower.includes('mejorar')) {
-                return 'Para mejorar rentabilidad: 1) Revisa precios (muchas PYMEs cobran poco), 2) Reduce gastos fijos, 3) Separa gastos personales de la empresa, 4) Controla costos variables.';
-            }
-            
-            return 'Interesante pregunta. Para darte una respuesta personalizada, te recomiendo agendar una consultoría gratuita donde revisamos tu caso específico.';
+
+        function obtenerRespuestaFallback(pregunta) {
+            const p = pregunta.toLowerCase();
+            if (p.includes('margen')) return 'Un margen neto saludable para PYMEs debería estar entre 15-25%. Si el tuyo está bajo 10%, necesitas revisar costos y precios urgentemente.';
+            if (p.includes('equilibrio')) return 'El punto de equilibrio es el nivel de ventas donde no ganas ni pierdes. Si estás debajo, cada mes pierdes dinero.';
+            if (p.includes('rentabilidad') || p.includes('mejorar')) return 'Para mejorar rentabilidad: 1) Revisa precios, 2) Reduce gastos fijos, 3) Separa gastos personales de la empresa, 4) Controla costos variables.';
+            return 'Para darte una respuesta personalizada, te recomiendo agendar una consultoría gratuita donde revisamos tu caso específico.';
         }
-        
+
         function nuevoAnalisis() {
-            // Limpiar campos de ingreso manual
-            const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
-            inputs.forEach(input => input.value = '');
-            
-            // Limpiar lista de gastos
-            const listaGastos = document.getElementById('listaGastos');
-            if (listaGastos) listaGastos.innerHTML = '';
-            
-            // Ocultar resultado
+            document.querySelectorAll('#tab0 input[type="number"], #tab0 input[type="text"]').forEach(i => i.value = '');
+            document.getElementById('problemas1').value = '';
             document.getElementById('resultado').classList.remove('show');
             document.getElementById('resultadoContent').innerHTML = '';
-            
-            // Limpiar chat
-            const chatMessages = document.getElementById('chatMessages');
-            if (chatMessages) chatMessages.innerHTML = '';
-            
-            // Volver al tab 1
+
+            document.getElementById('chatMessages').innerHTML = `
+                <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                    <strong style="color: #667eea;">Analista:</strong>
+                    <p style="margin-top: 8px;">¡Hola! Soy tu analista financiero. Puedes hacerme preguntas como:</p>
+                    <ul style="margin-top: 10px; margin-left: 20px; line-height: 2;">
+                        <li>"¿Cómo sé si mis márgenes son buenos?"</li>
+                        <li>"¿Qué es el punto de equilibrio?"</li>
+                        <li>"¿Cómo puedo mejorar mi rentabilidad?"</li>
+                    </ul>
+                </div>`;
+
             cambiarTab(0);
-            
-            // Subir al inicio
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
+
         function agendarConsultoria() {
-            const mensaje = encodeURIComponent('Hola, acabo de analizar mi empresa con el Scanner IA PRO y quiero agendar una consultoría gratuita.');
+            const mensaje = encodeURIComponent('Hola, acabo de analizar mi empresa con el Scanner Financiero PRO y quiero agendar una consultoría gratuita.');
             window.open(`https://wa.me/51980984222?text=${mensaje}`, '_blank');
         }
-        
-        // Permitir enviar mensaje con Enter
+
         document.getElementById('chatInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                enviarMensaje();
-            }
+            if (e.key === 'Enter') enviarMensaje();
         });
     </script>
 </body>
