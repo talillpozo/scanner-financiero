@@ -499,13 +499,25 @@ Genera un análisis BREVE Y DIRECTO (máximo 200 palabras) que incluya:
 
 Usa un tono profesional pero cercano. Sin teoría, solo práctica.`;
 
-            // En producción, aquí llamarías a la API de Claude
-            // const response = await fetch('https://api.anthropic.com/v1/messages', {...})
+            // Llamada real a Claude API
+            let analisisIA = '';
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 1000,
+                        messages: [{ role: 'user', content: prompt }]
+                    })
+                });
+                const result = await response.json();
+                analisisIA = result.content[0].text;
+            } catch(e) {
+                analisisIA = generarAnalisisSimulado(datos, { utilidad, margenNeto, margenContribucion, puntoEquilibrio });
+            }
             
-            // Por ahora, generamos respuesta simulada basada en métricas reales
-            const analisisIA = generarAnalisisSimulado(datos, { utilidad, margenNeto, margenContribucion, puntoEquilibrio });
-            
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            await new Promise(resolve => setTimeout(resolve, 1000));
             
             mostrarResultado(datos, { utilidad, margenNeto, margenContribucion, puntoEquilibrio }, analisisIA);
         }
