@@ -271,8 +271,7 @@
         
         <div class="tabs">
             <button class="tab active" onclick="cambiarTab(0)">📊 Ingreso Manual</button>
-            <button class="tab" onclick="cambiarTab(1)">📁 Subir Excel</button>
-            <button class="tab" onclick="cambiarTab(2)">💬 Chatbot IA</button>
+            <button class="tab" onclick="cambiarTab(1)">💬 Chatbot IA</button>
         </div>
         
         <!-- TAB 1: INGRESO MANUAL -->
@@ -318,31 +317,8 @@
             </button>
         </div>
         
-        <!-- TAB 2: SUBIR EXCEL -->
+        <!-- TAB 2: CHATBOT -->
         <div class="tab-content" id="tab1">
-            <h2 style="color: #667eea; margin-bottom: 30px;">Sube tu Estado de Resultados</h2>
-            
-            <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-                </svg>
-                <h3 style="color: #667eea; margin: 20px 0 10px 0;">Arrastra tu archivo Excel aquí</h3>
-                <p style="color: #666;">o haz click para seleccionar</p>
-                <p style="color: #999; font-size: 0.9em; margin-top: 10px;">Formatos: .xlsx, .xls, .csv</p>
-                <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" style="display: none;" onchange="handleFileUpload(this)">
-            </div>
-            
-            <div id="fileInfo" style="display: none; margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px;">
-                <p><strong>Archivo cargado:</strong> <span id="fileName"></span></p>
-            </div>
-            
-            <button class="btn-primary" id="btnAnalizar" style="display: none;" onclick="analizarExcel()">
-                🚀 Analizar con IA ahora
-            </button>
-        </div>
-        
-        <!-- TAB 3: CHATBOT -->
-        <div class="tab-content" id="tab2">
             <h2 style="color: #667eea; margin-bottom: 30px;">Chatea con el Analista IA</h2>
             
             <div id="chatContainer" style="background: #f8f9fa; border-radius: 12px; padding: 20px; min-height: 400px; margin-bottom: 20px;">
@@ -386,47 +362,11 @@
     </div>
     
     <script>
-        let archivoSubido = null;
-        
         function cambiarTab(index) {
-            // Ocultar todos los tabs y contenidos
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            // Activar el tab seleccionado
             document.querySelectorAll('.tab')[index].classList.add('active');
             document.querySelectorAll('.tab-content')[index].classList.add('active');
-        }
-        
-        // DRAG AND DROP
-        const uploadArea = document.getElementById('uploadArea');
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-        
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-        
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFileUpload({ files: files });
-            }
-        });
-        
-        function handleFileUpload(input) {
-            const file = input.files[0];
-            if (file) {
-                archivoSubido = file;
-                document.getElementById('fileName').textContent = file.name;
-                document.getElementById('fileInfo').style.display = 'block';
-                document.getElementById('btnAnalizar').style.display = 'block';
-            }
         }
         
         async function analizarManual() {
@@ -450,33 +390,6 @@
             await analizarConIA(datos);
         }
         
-        async function analizarExcel() {
-            if (!archivoSubido) {
-                alert('Por favor sube un archivo primero');
-                return;
-            }
-            
-            mostrarLoading();
-            
-            // Leer el archivo como texto para extraer datos básicos
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                const nombreArchivo = archivoSubido.name.replace(/\.[^/.]+$/, "");
-                const datosExcel = {
-                    nombreEmpresa: nombreArchivo,
-                    ingresos: 0,
-                    costos: 0,
-                    gastosFijos: 0,
-                    gastosVariables: 0,
-                    problemas: 'Análisis basado en archivo: ' + archivoSubido.name
-                };
-                
-                alert('Para un análisis preciso desde Excel, ingresa los datos manualmente en la pestaña "Ingreso Manual". El análisis desde Excel requiere configuración adicional.');
-                document.getElementById('loading').classList.remove('show');
-                cambiarTab(0);
-            };
-            reader.readAsText(archivoSubido);
-        }
         
         async function analizarConIA(datos) {
             // Calcular métricas básicas
@@ -530,27 +443,102 @@ Usa un tono profesional pero cercano. Sin teoría, solo práctica.`;
         }
         
         function generarAnalisisSimulado(datos, metricas) {
-            let analisis = `**Diagnóstico de ${datos.nombreEmpresa}:**\n\n`;
-            
-            if (metricas.margenNeto < 10) {
-                analisis += `🚨 **CRÍTICO:** Tu margen neto es ${metricas.margenNeto.toFixed(1)}%, muy por debajo del mínimo saludable (15%). Estás operando en zona de riesgo.\n\n`;
+            const { utilidad, margenNeto, margenContribucion, puntoEquilibrio } = metricas;
+            const porcGastosFijos = (datos.gastosFijos / datos.ingresos) * 100;
+            const porcCostos = (datos.costos / datos.ingresos) * 100;
+            const porcGastosVar = (datos.gastosVariables / datos.ingresos) * 100;
+            const cubrePE = datos.ingresos >= puntoEquilibrio;
+            const excedentePE = datos.ingresos - puntoEquilibrio;
+
+            let problemas = [];
+            let recomendaciones = [];
+            let nivel = '';
+
+            // --- DIAGNÓSTICO DE SALUD FINANCIERA ---
+            if (margenNeto >= 20) {
+                nivel = '🟢 SALUDABLE';
+            } else if (margenNeto >= 10) {
+                nivel = '🟡 MODERADO — hay margen de mejora';
+            } else if (margenNeto >= 0) {
+                nivel = '🟠 EN RIESGO — necesita acción urgente';
+            } else {
+                nivel = '🔴 CRÍTICO — estás perdiendo dinero';
             }
-            
-            if (metricas.margenContribucion < 40) {
-                analisis += `⚠️ **PROBLEMA GRAVE:** Tus costos productivos consumen ${(100-metricas.margenContribucion).toFixed(1)}% de los ingresos. Esto indica precios mal calculados o costos inflados.\n\n`;
+
+            // --- ANÁLISIS DE COSTOS PRODUCTIVOS ---
+            if (porcCostos > 60) {
+                problemas.push(`🚨 Costos productivos muy altos: consumen el ${porcCostos.toFixed(1)}% de tus ingresos (lo saludable es menos del 50%). Esto indica que tus precios son bajos o tus costos de producción están inflados.`);
+                recomendaciones.push(`Revisa urgentemente tus precios de venta — probablemente estás vendiendo barato. Calcula el costo real de cada producto/servicio y ajusta el precio con un margen mínimo del 40%.`);
+            } else if (porcCostos > 50) {
+                problemas.push(`⚠️ Costos productivos elevados: ${porcCostos.toFixed(1)}% de los ingresos. Está en el límite, conviene reducirlos.`);
+                recomendaciones.push(`Negocia mejores precios con proveedores o busca alternativas más económicas para bajar costos productivos al 45-50%.`);
             }
-            
-            if (datos.gastosFijos > datos.ingresos * 0.35) {
-                analisis += `💸 **ALERTA:** Gastos fijos representan ${((datos.gastosFijos/datos.ingresos)*100).toFixed(1)}% de ingresos. Hay compromisos fijos excesivos o gastos personales mezclados.\n\n`;
+
+            // --- ANÁLISIS DE GASTOS FIJOS ---
+            if (porcGastosFijos > 40) {
+                problemas.push(`💸 Gastos fijos excesivos: representan el ${porcGastosFijos.toFixed(1)}% de tus ingresos. Esto es muy peligroso porque son compromisos que pagas aunque no vendas nada.`);
+                recomendaciones.push(`Identifica qué gastos fijos puedes eliminar o reducir: alquileres, sueldos fijos, suscripciones. La meta es llevarlos por debajo del 30% de ingresos.`);
+            } else if (porcGastosFijos > 30) {
+                problemas.push(`⚠️ Gastos fijos moderadamente altos: ${porcGastosFijos.toFixed(1)}% de ingresos. Monitorea de cerca.`);
+                recomendaciones.push(`Controla que los gastos fijos no sigan creciendo. Cualquier nuevo gasto fijo debe estar justificado con un aumento de ingresos proporcional.`);
             }
-            
-            analisis += `**Recomendaciones urgentes:**\n`;
-            analisis += `1. Revisar estructura de precios - necesitas subir márgenes\n`;
-            analisis += `2. Separar gastos empresa/personales\n`;
-            analisis += `3. Reducir gastos fijos al 25-30% de ingresos\n\n`;
-            
-            analisis += `**Acción inmediata:** Agendar consultoría para rediseñar tu estructura financiera antes de que la situación se complique.`;
-            
+
+            // --- ANÁLISIS DE PUNTO DE EQUILIBRIO ---
+            if (!cubrePE) {
+                const faltante = puntoEquilibrio - datos.ingresos;
+                problemas.push(`🔴 NO estás cubriendo tu punto de equilibrio. Te faltan S/ ${faltante.toLocaleString('es-PE')} en ventas para no perder dinero. Cada mes que pase así, el negocio se descapitaliza.`);
+                recomendaciones.push(`Prioridad #1: aumentar ventas en S/ ${faltante.toLocaleString('es-PE')} mensuales o reducir costos en esa misma cantidad. Sin esto, el negocio no es sostenible.`);
+            } else {
+                const porcentajeSobre = ((excedentePE / puntoEquilibrio) * 100).toFixed(1);
+                if (excedentePE > 0 && parseFloat(porcentajeSobre) < 15) {
+                    problemas.push(`⚠️ Estás sobre el punto de equilibrio pero con muy poco margen de seguridad (solo ${porcentajeSobre}% sobre el PE = S/ ${excedentePE.toLocaleString('es-PE')}). Cualquier baja en ventas te llevaría a pérdidas.`);
+                    recomendaciones.push(`Trabaja en aumentar el colchón sobre el punto de equilibrio. Lo ideal es estar al menos 25% por encima para tener seguridad ante imprevistos.`);
+                }
+            }
+
+            // --- ANÁLISIS DE UTILIDAD ---
+            if (utilidad < 0) {
+                problemas.push(`🔴 Estás generando pérdidas de S/ ${Math.abs(utilidad).toLocaleString('es-PE')} al mes. Si esto continúa, el negocio no podrá sostenerse.`);
+            } else if (utilidad === 0) {
+                problemas.push(`⚠️ Tu negocio está en punto muerto: no pierdes pero tampoco ganas. No hay retorno para ti como dueño/a.`);
+            }
+
+            // --- ANÁLISIS DE GASTOS VARIABLES ---
+            if (porcGastosVar > 20) {
+                problemas.push(`📊 Gastos variables altos: ${porcGastosVar.toFixed(1)}% de ingresos. Revisa si hay gastos variables que en realidad son fijos mal clasificados.`);
+                recomendaciones.push(`Separa claramente gastos fijos de variables. Los gastos variables deben crecer solo cuando crecen las ventas, no de forma independiente.`);
+            }
+
+            // Si todo está bien
+            if (problemas.length === 0) {
+                problemas.push(`✅ Tu estructura financiera está bien equilibrada. El negocio es rentable y cubre con holgura el punto de equilibrio.`);
+                recomendaciones.push(`Enfócate ahora en escalar: reinvierte parte de la utilidad en marketing o capacidad productiva para crecer manteniendo estos márgenes.`);
+            }
+
+            // --- CONSTRUIR TEXTO FINAL ---
+            let analisis = `📋 DIAGNÓSTICO FINANCIERO — ${datos.nombreEmpresa}\n`;
+            analisis += `Estado general: ${nivel}\n\n`;
+
+            analisis += `📊 RESUMEN DE TUS NÚMEROS:\n`;
+            analisis += `• Ingresos: S/ ${datos.ingresos.toLocaleString('es-PE')} → Gastos totales: S/ ${(datos.costos + datos.gastosFijos + datos.gastosVariables).toLocaleString('es-PE')}\n`;
+            analisis += `• Lo que te queda (utilidad): S/ ${utilidad.toLocaleString('es-PE')} (${margenNeto.toFixed(1)}% de margen)\n`;
+            analisis += `• Punto de equilibrio: S/ ${puntoEquilibrio.toLocaleString('es-PE')} — ${cubrePE ? `✅ lo estás cubriendo` : `❌ NO lo estás cubriendo`}\n\n`;
+
+            analisis += `🔍 PROBLEMAS IDENTIFICADOS:\n`;
+            problemas.forEach((p, i) => { analisis += `${i+1}. ${p}\n`; });
+
+            analisis += `\n💡 RECOMENDACIONES CONCRETAS:\n`;
+            recomendaciones.forEach((r, i) => { analisis += `${i+1}. ${r}\n`; });
+
+            if (datos.problemas) {
+                analisis += `\n🗣️ SOBRE LO QUE MENCIONAS ("${datos.problemas}"):\n`;
+                if (utilidad < datos.ingresos * 0.1) {
+                    analisis += `Es normal que no veas el dinero: tu margen neto de ${margenNeto.toFixed(1)}% significa que de cada S/ 100 que vendes, solo te quedan S/ ${margenNeto.toFixed(0)}. El resto se va en costos y gastos. La solución está en reducir esos gastos o subir precios.`;
+                } else {
+                    analisis += `Tus números muestran que el negocio genera utilidad. El problema puede ser de flujo de caja (el dinero entra y sale en momentos diferentes) o de mezcla de gastos personales con los del negocio.`;
+                }
+            }
+
             return analisis;
         }
         
