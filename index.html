@@ -589,6 +589,10 @@ Usa un tono profesional pero cercano. Sin teoría, solo práctica.`;
                     <button onclick="agendarConsultoria()" style="background: white; color: #667eea; border: none; padding: 15px 40px; font-size: 1.1em; border-radius: 8px; cursor: pointer; font-weight: bold;">
                         📞 Agendar ahora
                     </button>
+                    <br><br>
+                    <button onclick="nuevoAnalisis()" style="background: transparent; color: white; border: 2px solid white; padding: 12px 35px; font-size: 1em; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px;">
+                        🔄 Nuevo Análisis
+                    </button>
                 </div>
             `;
             
@@ -651,9 +655,33 @@ Usa un tono profesional pero cercano. Sin teoría, solo práctica.`;
             return 'Interesante pregunta. Para darte una respuesta personalizada, te recomiendo agendar una consultoría gratuita donde revisamos tu caso específico.';
         }
         
+        function nuevoAnalisis() {
+            // Limpiar campos de ingreso manual
+            const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+            inputs.forEach(input => input.value = '');
+            
+            // Limpiar lista de gastos
+            const listaGastos = document.getElementById('listaGastos');
+            if (listaGastos) listaGastos.innerHTML = '';
+            
+            // Ocultar resultado
+            document.getElementById('resultado').classList.remove('show');
+            document.getElementById('resultadoContent').innerHTML = '';
+            
+            // Limpiar chat
+            const chatMessages = document.getElementById('chatMessages');
+            if (chatMessages) chatMessages.innerHTML = '';
+            
+            // Volver al tab 1
+            cambiarTab(0);
+            
+            // Subir al inicio
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
         function agendarConsultoria() {
             const mensaje = encodeURIComponent('Hola, acabo de analizar mi empresa con el Scanner IA PRO y quiero agendar una consultoría gratuita.');
-            window.open(`https://wa.me/51999999999?text=${mensaje}`, '_blank');
+            window.open(`https://wa.me/51980984222?text=${mensaje}`, '_blank');
         }
         
         // Permitir enviar mensaje con Enter
