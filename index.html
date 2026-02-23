@@ -1,841 +1,1191 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Scanner Financiero · Diagnóstico Gratuito</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    * { -webkit-tap-highlight-color: transparent; }
-    body { font-family: 'Nunito Sans', sans-serif; }
-    .pantalla { display: none; }
-    .pantalla.activa { display: flex; }
-    input[type=number]::-webkit-inner-spin-button,
-    input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; }
-    input[type=number] { -moz-appearance: textfield; }
-    .fade-in { animation: fadeIn 0.35s ease forwards; }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-    .semaforo-verde  { border-left: 4px solid #1A7A4A; background: #E8F5EE; }
-    .semaforo-amarillo { border-left: 4px solid #B8700A; background: #FFF8E6; }
-    .semaforo-rojo   { border-left: 4px solid #C0392B; background: #FDECEB; }
-    .dot-verde   { background:#1A7A4A; }
-    .dot-amarillo { background:#B8700A; }
-    .dot-rojo    { background:#C0392B; }
-    .texto-verde  { color:#1A7A4A; }
-    .texto-amarillo { color:#B8700A; }
-    .texto-rojo   { color:#C0392B; }
-    .microfrase { background: rgba(242,201,76,0.12); border:1px solid rgba(242,201,76,0.3); border-radius:10px; padding:10px 14px; font-size:13px; color:#7A5800; font-style:italic; line-height:1.5; margin-top:10px; }
-    .gasto-card { background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:12px; padding:14px; }
-    .gasto-card:focus-within { border-color:#1A56A0; background:#EBF3FB; }
-    input:focus { outline:none; }
-    .btn-pri { background:#1A56A0; color:white; font-weight:800; font-size:16px; padding:16px; border-radius:14px; width:100%; border:none; cursor:pointer; transition:all .2s; letter-spacing:.3px; }
-    .btn-pri:hover { background:#1246880; transform:translateY(-1px); }
-    .btn-pri:active { transform:scale(.98); }
-    .btn-wa { background:#25D366; color:white; font-weight:800; font-size:16px; padding:18px; border-radius:14px; width:100%; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:10px; transition:all .2s; text-decoration:none; }
-    .btn-wa:active { transform:scale(.98); }
-    .campo { width:100%; background:#F8FAFC; border:1.5px solid #E2E8F0; border-radius:12px; padding:14px 16px; font-family:'Nunito Sans',sans-serif; font-size:16px; color:#1E293B; }
-    .campo:focus { border-color:#1A56A0; background:#EBF3FB; outline:none; }
-    .campo::placeholder { color:#94A3B8; }
-    .progress-bar { height:5px; background:#E2E8F0; border-radius:3px; overflow:hidden; }
-    .progress-fill { height:100%; background:#1A56A0; border-radius:3px; transition:width .4s ease; }
-    .score-estable  { background:linear-gradient(135deg,#E8F5EE,#D1FAE5); border:2px solid #1A7A4A; }
-    .score-vulnerable { background:linear-gradient(135deg,#FFF8E6,#FEF3C7); border:2px solid #B8700A; }
-    .score-critico  { background:linear-gradient(135deg,#FDECEB,#FEE2E2); border:2px solid #C0392B; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Scanner Financiero · Talía Ill</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:    #0B1F3A;
+  --azul:    #1A56A0;
+  --azul2:   #1D6BC5;
+  --gold:    #F2C94C;
+  --gold2:   #E6AC1A;
+  --verde:   #0F7A45;
+  --rojo:    #C0392B;
+  --amber:   #B8700A;
+  --bg:      #F0F4FA;
+  --card:    #FFFFFF;
+  --gris:    #64748B;
+  --borde:   #DDE5F0;
+  --texto:   #0F1E30;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.app {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── PANTALLAS ── */
+.p { display: none; flex-direction: column; min-height: 100vh; animation: fadeUp .35s ease; }
+.p.on { display: flex; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HEADER ── */
+.hdr {
+  background: var(--navy);
+  padding: 52px 28px 44px;
+  position: relative;
+  overflow: hidden;
+}
+.hdr::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 220px; height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(26,86,160,0.5), transparent 70%);
+}
+.hdr-tag {
+  display: inline-block;
+  background: rgba(242,201,76,0.15);
+  border: 1px solid rgba(242,201,76,0.35);
+  color: var(--gold);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 20px;
+  margin-bottom: 18px;
+}
+.hdr h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1.25;
+  margin-bottom: 10px;
+}
+.hdr h1 span { color: var(--gold); }
+.hdr p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.6;
+}
+
+/* ── CUERPO ── */
+.body { padding: 28px 24px; flex: 1; display: flex; flex-direction: column; }
+
+/* ── BOTONES ── */
+.btn {
+  background: var(--azul);
+  color: #fff;
+  font-family: 'Sora', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 17px;
+  border-radius: 14px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+  transition: background .2s, transform .1s;
+  letter-spacing: .3px;
+}
+.btn:active { transform: scale(.98); background: var(--azul2); }
+.btn-wa {
+  background: #25D366;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  font-size: 16px;
+}
+.btn-wa:active { background: #1ebe5a; }
+.btn-ghost {
+  background: transparent;
+  color: var(--gris);
+  border: 1.5px solid var(--borde);
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 12px;
+}
+
+/* ── CAMPOS ── */
+.label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gris);
+  display: block;
+  margin-bottom: 6px;
+  margin-top: 18px;
+}
+.label:first-child { margin-top: 0; }
+
+.input {
+  width: 100%;
+  background: #F7FAFF;
+  border: 1.5px solid var(--borde);
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-family: 'Sora', sans-serif;
+  font-size: 15px;
+  color: var(--texto);
+  transition: border-color .2s, background .2s;
+  -webkit-appearance: none;
+}
+.input:focus { outline: none; border-color: var(--azul); background: #EEF4FF; }
+
+.input-prefix {
+  position: relative;
+}
+.input-prefix span {
+  position: absolute;
+  left: 14px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--gris);
+  font-family: 'DM Mono', monospace;
+  pointer-events: none;
+}
+.input-prefix input { padding-left: 34px; }
+
+.hint {
+  font-size: 11px;
+  color: var(--gris);
+  margin-top: 5px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Deuda toggle */
+.toggle-row { display: flex; gap: 10px; margin-top: 0; }
+.toggle-btn {
+  flex: 1; padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--borde);
+  background: #F7FAFF;
+  font-family: 'Sora', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gris);
+  cursor: pointer;
+  transition: all .2s;
+}
+.toggle-btn.on {
+  background: var(--azul);
+  border-color: var(--azul);
+  color: #fff;
+}
+
+/* Separador de sección */
+.sep {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--azul);
+  padding: 20px 0 4px;
+  border-bottom: 1px solid var(--borde);
+  margin-bottom: 4px;
+}
+
+/* ── REVELACIONES ── */
+.rev {
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 14px;
+  border-left: 4px solid;
+  position: relative;
+}
+.rev-verde   { background: #E8F5EE; border-color: var(--verde); }
+.rev-amarillo{ background: #FFF8E6; border-color: var(--amber); }
+.rev-rojo    { background: #FDECEB; border-color: var(--rojo); }
+
+.rev-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.dot-verde    { background: var(--verde); }
+.dot-amarillo { background: var(--amber); }
+.dot-rojo     { background: var(--rojo); }
+
+.rev-monto {
+  font-family: 'DM Mono', monospace;
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.rev-monto.verde    { color: var(--verde); }
+.rev-monto.amarillo { color: var(--amber); }
+.rev-monto.rojo     { color: var(--rojo); }
+
+.rev-texto { font-size: 13px; color: var(--texto); line-height: 1.55; margin-bottom: 6px; }
+.rev-traduccion { font-size: 12px; color: var(--gris); line-height: 1.5; }
+
+.microfrase {
+  background: rgba(242,201,76,0.13);
+  border: 1px solid rgba(242,201,76,0.3);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #7A5800;
+  font-style: italic;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+/* ── SCORE ── */
+.score-card {
+  border-radius: 18px;
+  padding: 28px 24px;
+  text-align: center;
+  margin-bottom: 18px;
+}
+.score-estable    { background: #E8F5EE; border: 1.5px solid #0F7A45; }
+.score-vulnerable { background: #FFF8E6; border: 1.5px solid var(--amber); }
+.score-critico    { background: #FDECEB; border: 1.5px solid var(--rojo); }
+
+.score-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 64px;
+  font-weight: 500;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.score-label {
+  display: inline-block;
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  background: white;
+  margin-bottom: 14px;
+}
+.score-desc { font-size: 13px; color: var(--texto); line-height: 1.6; }
+
+/* ── DIAGNÓSTICO NARRATIVO ── */
+.diag-card {
+  background: var(--navy);
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 14px;
+  color: white;
+}
+.diag-card h3 {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+.diag-principal {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 16px;
+}
+.diag-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 28px;
+  color: var(--gold);
+  font-weight: 500;
+  margin: 12px 0 4px;
+  display: block;
+}
+.diag-secundario {
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin-top: 16px;
+  padding-top: 14px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.6;
+}
+.diag-preguntas {
+  margin-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 14px;
+}
+.diag-preguntas p {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+.pregunta-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.pregunta-item::before {
+  content: '→';
+  color: var(--gold);
+  font-size: 13px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.pregunta-item span {
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+}
+
+/* ── PROYECCIÓN ── */
+.proy-card {
+  background: linear-gradient(135deg, #1A2F4E, #0B1F3A);
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 14px;
+  text-align: center;
+}
+.proy-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 8px; }
+.proy-monto { font-family: 'DM Mono', monospace; font-size: 42px; font-weight: 500; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+.proy-sub { font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.55; }
+.proy-esperanza {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 12px;
+  font-style: italic;
+  color: rgba(255,255,255,0.5);
+}
+
+/* ── CTA ── */
+.cta-card {
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 18px;
+  border: 1.5px solid var(--borde);
+}
+.preview-wa {
+  font-size: 12px;
+  color: var(--gris);
+  background: white;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 16px;
+  line-height: 1.6;
+  border: 1px solid var(--borde);
+  font-style: italic;
+}
+
+/* ── BARRA DE PROGRESO ── */
+.progreso {
+  display: flex;
+  gap: 4px;
+  padding: 14px 24px 0;
+}
+.prog-dot {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--borde);
+  transition: background .3s;
+}
+.prog-dot.on { background: var(--azul); }
+
+/* ── MT AUTO ── */
+.mt-a { margin-top: auto; }
+.mb-3 { margin-bottom: 12px; }
+.mb-4 { margin-bottom: 16px; }
+.gap { height: 24px; }
+.gap-sm { height: 12px; }
+
+/* Tagline p5 */
+.tagline-p5 {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.tagline-p5 h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--navy);
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+.tagline-p5 p {
+  font-size: 13px;
+  color: var(--gris);
+  line-height: 1.6;
+}
+
+/* Score reminder en p5 */
+.score-reminder {
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  margin-bottom: 18px;
+  border: 1.5px solid;
+}
+
+/* Divisor */
+.divider {
+  height: 1px;
+  background: var(--borde);
+  margin: 20px 0;
+}
+
+/* Firma footer */
+.firma {
+  text-align: center;
+  padding: 20px 24px 32px;
+  font-size: 11px;
+  color: var(--gris);
+}
+.firma strong { color: var(--azul); }
+</style>
 </head>
-<body class="bg-[#EBF3FB] min-h-screen flex items-start justify-center">
+<body>
+<div class="app">
 
-<!-- ════════════ CONTENEDOR MÓVIL ════════════ -->
-<div class="w-full max-w-[420px] min-h-screen bg-white flex flex-col shadow-xl relative">
-
-  <!-- ══════════════════════════════════════════
-       PANTALLA 1 — ENTRADA SIN RESISTENCIA
-  ══════════════════════════════════════════ -->
-  <div id="p1" class="pantalla activa flex-col min-h-screen">
-
-    <!-- Header azul -->
-    <div class="bg-[#1A56A0] px-6 pt-12 pb-10">
-      <!-- Logo ícono -->
-      <div class="flex justify-center mb-6">
-        <div class="bg-white rounded-2xl p-3 shadow-lg">
-          <svg width="52" height="52" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="45" cy="45" r="38" stroke="#1A56A0" stroke-width="2.8" fill="none"/>
-            <path d="M 45 14 A 31 31 0 1 1 14.5 55" stroke="#93C5FD" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.5"/>
-            <polyline points="12,45 22,45 27,45 31,58 36,28 41,50 45,38 49,28 53,45 63,45 78,45"
-              stroke="#1A56A0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <circle cx="49" cy="28" r="4" fill="#F2C94C"/>
-            <circle cx="49" cy="28" r="2" fill="white"/>
-            <circle cx="53" cy="45" r="2.5" fill="#1A56A0"/>
-            <circle cx="53" cy="45" r="5" stroke="#1A56A0" stroke-width="1" fill="none" opacity="0.25"/>
-          </svg>
-        </div>
-      </div>
-      <h1 class="text-white text-2xl font-extrabold leading-tight text-center">
-        Muchos negocios venden bien pero no saben con precisión
-        <span class="text-[#F2C94C]"> cuánto ganan realmente.</span>
-      </h1>
-    </div>
-
-    <!-- Cuerpo -->
-    <div class="flex-1 flex flex-col px-6 py-8">
-      <p class="text-[#64748B] text-[15px] leading-relaxed text-center mb-8">
-        Este diagnóstico te muestra la situación financiera real de tu empresa en <strong class="text-[#1A56A0]">3 minutos</strong>. Con tus propios números.
-      </p>
-
-      <!-- Trust pills -->
-      <div class="flex justify-center gap-3 mb-10 flex-wrap">
-        <span class="bg-[#EBF3FB] text-[#1A56A0] text-xs font-700 px-3 py-1.5 rounded-full font-bold">✓ Gratis</span>
-        <span class="bg-[#EBF3FB] text-[#1A56A0] text-xs font-700 px-3 py-1.5 rounded-full font-bold">✓ 3 minutos</span>
-        <span class="bg-[#EBF3FB] text-[#1A56A0] text-xs font-700 px-3 py-1.5 rounded-full font-bold">✓ Sin registrarte</span>
-      </div>
-
-      <div class="mt-auto">
-        <button class="btn-pri" onclick="ir('p2')">Ver mi diagnóstico</button>
-        <p class="text-center text-xs text-[#94A3B8] mt-4 leading-relaxed">
-          Tus datos no se almacenan.<br>El diagnóstico es 100% local en tu dispositivo.
-        </p>
-      </div>
-    </div>
-
-    <!-- Copyright -->
-    <div class="text-center text-xs text-[#CBD5E1] pb-6">
-      © 2026 Scanner Financiero · Talía Ill · Tacna, Perú
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       PANTALLA 2 — LAS 6 PREGUNTAS
-  ══════════════════════════════════════════ -->
-  <div id="p2" class="pantalla flex-col min-h-screen">
-
-    <!-- Header -->
-    <div class="bg-white border-b border-[#E2E8F0] px-5 py-4 sticky top-0 z-10">
-      <div class="flex items-center justify-between mb-3">
-        <button onclick="ir('p1')" class="text-[#94A3B8] text-sm font-semibold flex items-center gap-1">
-          ← Atrás
-        </button>
-        <div class="flex items-center gap-2">
-          <svg width="20" height="20" viewBox="0 0 90 90" fill="none">
-            <circle cx="45" cy="45" r="38" stroke="#1A56A0" stroke-width="3" fill="none"/>
-            <polyline points="12,45 22,45 27,45 31,58 36,28 41,50 45,38 49,28 53,45 63,45 78,45" stroke="#1A56A0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <circle cx="49" cy="28" r="5" fill="#F2C94C"/>
-          </svg>
-          <span class="text-xs text-[#64748B] font-semibold">Paso 2 de 5</span>
-        </div>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:35%"></div></div>
-    </div>
-
-    <div class="flex-1 px-5 py-6 overflow-y-auto">
-      <h2 class="text-[#0D3B6E] text-xl font-extrabold mb-1">Cuéntanos sobre tu negocio</h2>
-      <p class="text-[#94A3B8] text-sm mb-6">Un estimado es suficiente. No necesitas números exactos.</p>
-
-      <!-- P1: Nombre empresa (opcional) -->
-      <div class="mb-5">
-        <label class="block text-[#1E293B] font-700 text-[15px] mb-1 font-bold">
-          ¿Cómo se llama tu negocio? <span class="text-[#94A3B8] font-normal text-xs">(opcional)</span>
-        </label>
-        <input id="i-nombre" type="text" class="campo" placeholder="Ej: Distribuidora López">
-      </div>
-
-      <!-- P1: Ventas -->
-      <div class="mb-5">
-        <label class="block text-[#1E293B] font-bold text-[15px] mb-1">
-          💰 ¿Cuánto vendiste el mes pasado?
-        </label>
-        <p class="text-[#94A3B8] text-xs mb-2 italic">Un estimado está bien. Sin IGV si puedes.</p>
-        <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B] font-bold">S/</span>
-          <input id="i-ventas" type="number" min="0" class="campo pl-10" placeholder="0">
-        </div>
-        <p id="err-ventas" class="text-red-500 text-xs mt-1 hidden">Ingresa tus ventas para continuar.</p>
-      </div>
-
-      <!-- P2: Sueldos -->
-      <div class="mb-5">
-        <label class="block text-[#1E293B] font-bold text-[15px] mb-1">
-          👥 ¿Cuánto pagas de sueldos en total al mes?
-        </label>
-        <p class="text-[#94A3B8] text-xs mb-2 italic">Lo que desembolsas. Sin incluir beneficios sociales.</p>
-        <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B] font-bold">S/</span>
-          <input id="i-planilla" type="number" min="0" class="campo pl-10" placeholder="0">
-        </div>
-      </div>
-
-      <!-- P3: Empleados -->
-      <div class="mb-5">
-        <label class="block text-[#1E293B] font-bold text-[15px] mb-1">
-          🏷️ ¿Cuántos empleados tiene tu empresa?
-        </label>
-        <p class="text-[#94A3B8] text-xs mb-2 italic">Incluye a todos, aunque sean a tiempo parcial.</p>
-        <input id="i-empleados" type="number" min="0" class="campo" placeholder="0">
-      </div>
-
-      <!-- P4: Retiro dueño -->
-      <div class="mb-5">
-        <label class="block text-[#1E293B] font-bold text-[15px] mb-1">
-          🤲 ¿Cuánto retiras tú (el dueño) del negocio al mes?
-        </label>
-        <p class="text-[#94A3B8] text-xs mb-2 italic">Lo que te llevas mensualmente. Si no retiras nada fijo, escribe 0.</p>
-        <div class="relative">
-          <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B] font-bold">S/</span>
-          <input id="i-retiro" type="number" min="0" class="campo pl-10" placeholder="0">
-        </div>
-      </div>
-
-      <!-- P5: Gastos -->
-      <div class="mb-5">
-        <label class="block text-[#1E293B] font-bold text-[15px] mb-2">
-          📋 ¿Cuánto pagas mensualmente por estos gastos?
-        </label>
-        <p class="text-[#94A3B8] text-xs mb-3 italic">Pon 0 si no tienes ese gasto. Un aproximado está bien.</p>
-        <div class="grid grid-cols-2 gap-3">
-          <div class="gasto-card">
-            <div class="text-xl mb-1">🏢</div>
-            <div class="text-xs font-bold text-[#1E293B] mb-0.5">Local / Alquiler</div>
-            <div class="text-[10px] text-[#94A3B8] mb-2">Tu tienda, oficina o almacén</div>
-            <div class="relative">
-              <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[#64748B] text-xs font-bold">S/</span>
-              <input id="i-alquiler" type="number" min="0" class="w-full bg-transparent border-b border-[#CBD5E1] pl-6 text-sm text-[#1E293B] py-1 focus:border-[#1A56A0] focus:outline-none" placeholder="0">
-            </div>
-          </div>
-          <div class="gasto-card">
-            <div class="text-xl mb-1">💡</div>
-            <div class="text-xs font-bold text-[#1E293B] mb-0.5">Servicios básicos</div>
-            <div class="text-[10px] text-[#94A3B8] mb-2">Luz, agua, internet, teléfono</div>
-            <div class="relative">
-              <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[#64748B] text-xs font-bold">S/</span>
-              <input id="i-servicios" type="number" min="0" class="w-full bg-transparent border-b border-[#CBD5E1] pl-6 text-sm text-[#1E293B] py-1 focus:border-[#1A56A0] focus:outline-none" placeholder="0">
-            </div>
-          </div>
-          <div class="gasto-card">
-            <div class="text-xl mb-1">🚗</div>
-            <div class="text-xs font-bold text-[#1E293B] mb-0.5">Transporte</div>
-            <div class="text-[10px] text-[#94A3B8] mb-2">Gasolina, delivery, movilidad</div>
-            <div class="relative">
-              <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[#64748B] font-bold text-xs">S/</span>
-              <input id="i-transporte" type="number" min="0" class="w-full bg-transparent border-b border-[#CBD5E1] pl-6 text-sm text-[#1E293B] py-1 focus:border-[#1A56A0] focus:outline-none" placeholder="0">
-            </div>
-          </div>
-          <div class="gasto-card">
-            <div class="text-xl mb-1">📦</div>
-            <div class="text-xs font-bold text-[#1E293B] mb-0.5">Insumos / Mercadería</div>
-            <div class="text-[10px] text-[#94A3B8] mb-2">Lo que compras para vender</div>
-            <div class="relative">
-              <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[#64748B] font-bold text-xs">S/</span>
-              <input id="i-insumos" type="number" min="0" class="w-full bg-transparent border-b border-[#CBD5E1] pl-6 text-sm text-[#1E293B] py-1 focus:border-[#1A56A0] focus:outline-none" placeholder="0">
-            </div>
-          </div>
-          <div class="gasto-card col-span-2">
-            <div class="text-xl mb-1">🛠️</div>
-            <div class="text-xs font-bold text-[#1E293B] mb-0.5">Otros pagos fijos</div>
-            <div class="text-[10px] text-[#94A3B8] mb-2">Contador, seguridad, mantenimiento, suscripciones</div>
-            <div class="relative">
-              <span class="absolute left-2 top-1/2 -translate-y-1/2 text-[#64748B] font-bold text-xs">S/</span>
-              <input id="i-otros" type="number" min="0" class="w-full bg-transparent border-b border-[#CBD5E1] pl-6 text-sm text-[#1E293B] py-1 focus:border-[#1A56A0] focus:outline-none" placeholder="0">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- P6: Deuda -->
-      <div class="mb-8">
-        <label class="block text-[#1E293B] font-bold text-[15px] mb-2">
-          🏦 ¿Tienes préstamos o créditos activos?
-        </label>
-        <p class="text-[#94A3B8] text-xs mb-3 italic">Cuotas mensuales a bancos, financieras o prestamistas.</p>
-        <div class="flex gap-3 mb-3">
-          <button id="btn-deuda-no" onclick="toggleDeuda(false)"
-            class="flex-1 py-3 rounded-xl border-2 border-[#1A56A0] bg-[#1A56A0] text-white font-bold text-sm transition-all">
-            No tengo
-          </button>
-          <button id="btn-deuda-si" onclick="toggleDeuda(true)"
-            class="flex-1 py-3 rounded-xl border-2 border-[#E2E8F0] text-[#64748B] font-bold text-sm transition-all">
-            Sí tengo
-          </button>
-        </div>
-        <div id="campo-deuda" class="hidden">
-          <div class="relative">
-            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-[#64748B] font-bold">S/</span>
-            <input id="i-deuda" type="number" min="0" class="campo pl-10" placeholder="Cuota mensual total">
-          </div>
-        </div>
-      </div>
-
-      <button class="btn-pri mb-6" onclick="calcularYMostrar()">Ver mi diagnóstico →</button>
-    </div>
-  </div>
-
-  <!-- ══════════════════════════════════════════
-       PANTALLA CARGA
-  ══════════════════════════════════════════ -->
-  <div id="p-carga" class="pantalla flex-col min-h-screen items-center justify-center bg-[#1A56A0]">
-    <div class="text-center px-8">
-      <div class="flex justify-center mb-8">
-        <svg width="80" height="80" viewBox="0 0 90 90" fill="none" class="animate-spin" style="animation-duration:2s">
-          <circle cx="45" cy="45" r="38" stroke="rgba(255,255,255,0.2)" stroke-width="3" fill="none"/>
-          <path d="M 45 7 A 38 38 0 0 1 83 45" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+<!-- ═══════════════ P1 — ENTRADA ═══════════════ -->
+<div id="p1" class="p on">
+  <div class="hdr">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px;">
+      <div style="background:white; border-radius:14px; padding:8px; display:inline-flex; box-shadow:0 2px 12px rgba(0,0,0,0.18);">
+        <svg width="40" height="40" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="45" cy="45" r="38" stroke="#1A56A0" stroke-width="2.8" fill="none"/>
+          <path d="M 45 14 A 31 31 0 1 1 14.5 55" stroke="#93C5FD" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.5"/>
+          <polyline points="12,45 22,45 27,45 31,58 36,28 41,50 45,38 49,28 53,45 63,45 78,45"
+            stroke="#1A56A0" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <circle cx="49" cy="28" r="4" fill="#F2C94C"/>
+          <circle cx="49" cy="28" r="2" fill="white"/>
+          <circle cx="53" cy="45" r="2.5" fill="#1A56A0"/>
+          <circle cx="53" cy="45" r="5" stroke="#1A56A0" stroke-width="1" fill="none" opacity="0.25"/>
         </svg>
       </div>
-      <div class="w-16 h-16 mx-auto mb-6 -mt-20 flex items-center justify-center">
-        <svg width="40" height="40" viewBox="0 0 90 90" fill="none">
-          <circle cx="45" cy="45" r="30" stroke="white" stroke-width="2.5" fill="none"/>
-          <polyline points="18,45 28,45 32,32 37,56 42,40 47,30 51,45 60,45 72,45" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-          <circle cx="47" cy="30" r="4" fill="#F2C94C"/>
-        </svg>
+      <div>
+        <div style="font-size:11px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(242,201,76,0.9);">Scanner Financiero</div>
+        <div style="font-size:10px; color:rgba(255,255,255,0.5); letter-spacing:1px;">Diagn&#243;stico gratuito &middot; 3 minutos</div>
       </div>
-      <p id="texto-carga" class="text-white text-lg font-bold mb-3 leading-tight">
-        Calculando tu punto de equilibrio...
-      </p>
-      <p class="text-[#93C5FD] text-sm">Analizando los números de tu negocio</p>
+    </div>
+    <h1>¿Sabes cuánto <span>gana realmente</span> tu negocio?</h1>
+    <p>Muchos negocios venden bien pero no saben con precisión cuánto están ganando realmente. Este diagnóstico te muestra la situación financiera real de tu empresa en 3 minutos.</p>
+  </div>
+  <div class="body">
+    <div style="background:#F7FAFF; border-radius:14px; padding:18px; margin-bottom:24px; border:1.5px solid var(--borde);">
+      <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+        <span style="font-size:18px;">📊</span>
+        <span style="font-size:13px; font-weight:700; color:var(--navy);">Qué vas a descubrir</span>
+      </div>
+      <div style="font-size:13px; color:var(--gris); line-height:1.8;">
+        ✓ Utilidad real después de todos tus costos<br>
+        ✓ Cuánto te cuesta realmente tu planilla<br>
+        ✓ A cuánto necesitas vender para no perder<br>
+        ✓ Diagnóstico del estado de tu negocio
+      </div>
+    </div>
+    <div class="mt-a">
+      <button class="btn" onclick="ir('p2')">Ver mi diagnóstico →</button>
+      <p style="text-align:center; font-size:11px; color:var(--gris); margin-top:12px;">Tus datos son privados y no se guardan.</p>
     </div>
   </div>
+</div>
 
-  <!-- ══════════════════════════════════════════
-       PANTALLA 3 — EL ESPEJO
-  ══════════════════════════════════════════ -->
-  <div id="p3" class="pantalla flex-col min-h-screen">
-
-    <!-- Header -->
-    <div class="bg-white border-b border-[#E2E8F0] px-5 py-4 sticky top-0 z-10">
-      <div class="flex items-center justify-between mb-3">
-        <button onclick="ir('p2')" class="text-[#94A3B8] text-sm font-semibold">← Atrás</button>
-        <div class="flex items-center gap-2">
-          <svg width="20" height="20" viewBox="0 0 90 90" fill="none">
-            <circle cx="45" cy="45" r="38" stroke="#1A56A0" stroke-width="3" fill="none"/>
-            <polyline points="12,45 22,45 27,45 31,58 36,28 41,50 45,38 49,28 53,45 63,45 78,45" stroke="#1A56A0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <circle cx="49" cy="28" r="5" fill="#F2C94C"/>
-          </svg>
-          <span class="text-xs text-[#64748B] font-semibold">Paso 3 de 5</span>
-        </div>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:60%"></div></div>
-    </div>
-
-    <div class="flex-1 px-5 py-6 overflow-y-auto bg-[#EBF3FB]">
-      <h2 class="text-[#0D3B6E] text-xl font-extrabold mb-1">Tu diagnóstico financiero</h2>
-      <p class="text-[#64748B] text-sm mb-6">Basado en los datos de tu negocio</p>
-
-      <!-- REVELACIÓN 1 -->
-      <div id="rev1" class="bg-white rounded-2xl p-5 mb-4 fade-in shadow-sm">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-bold text-[#64748B] uppercase tracking-wider">Tu Utilidad Real</span>
-          <div class="flex items-center gap-1.5">
-            <div id="dot1" class="w-2.5 h-2.5 rounded-full"></div>
-            <span id="etiqueta1" class="text-xs font-bold"></span>
-          </div>
-        </div>
-        <div id="monto1" class="text-4xl font-black mb-2"></div>
-        <p id="texto1" class="text-[#64748B] text-sm leading-relaxed mb-1"></p>
-        <p id="traduccion1" class="text-[#1E293B] text-[14px] font-bold leading-snug mb-2"></p>
-        <div id="microfrase1" class="microfrase hidden"></div>
-      </div>
-
-      <!-- REVELACIÓN 2 -->
-      <div id="rev2" class="bg-white rounded-2xl p-5 mb-4 fade-in shadow-sm" style="animation-delay:.1s">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-bold text-[#64748B] uppercase tracking-wider">El Costo Real de Tu Equipo</span>
-          <div class="flex items-center gap-1.5">
-            <div id="dot2" class="w-2.5 h-2.5 rounded-full"></div>
-            <span id="etiqueta2" class="text-xs font-bold"></span>
-          </div>
-        </div>
-        <div id="monto2" class="text-4xl font-black mb-2"></div>
-        <p id="texto2" class="text-[#64748B] text-sm leading-relaxed mb-1"></p>
-        <p id="traduccion2" class="text-[#1E293B] text-[14px] font-bold leading-snug mb-2"></p>
-        <div id="microfrase2" class="microfrase hidden"></div>
-      </div>
-
-      <!-- REVELACIÓN 3 -->
-      <div id="rev3" class="bg-white rounded-2xl p-5 mb-6 fade-in shadow-sm" style="animation-delay:.2s">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-bold text-[#64748B] uppercase tracking-wider">Cuánto Necesitas Vender</span>
-          <div class="flex items-center gap-1.5">
-            <div id="dot3" class="w-2.5 h-2.5 rounded-full"></div>
-            <span id="etiqueta3" class="text-xs font-bold"></span>
-          </div>
-        </div>
-        <div id="monto3" class="text-4xl font-black mb-2"></div>
-        <p id="texto3" class="text-[#64748B] text-sm leading-relaxed mb-1"></p>
-        <p id="traduccion3" class="text-[#1E293B] text-[14px] font-bold leading-snug mb-2"></p>
-        <div id="microfrase3" class="microfrase hidden"></div>
-      </div>
-
-      <!-- SCORE GLOBAL -->
-      <div id="score-card" class="rounded-2xl p-6 mb-6 text-center fade-in shadow-sm" style="animation-delay:.3s">
-        <p class="text-xs font-bold uppercase tracking-widest text-[#64748B] mb-2">Score de Salud Financiera</p>
-        <div id="score-numero" class="text-6xl font-black mb-2"></div>
-        <div id="score-etiqueta" class="inline-block px-4 py-1.5 rounded-full text-sm font-black uppercase tracking-wider mb-3"></div>
-        <p id="score-descripcion" class="text-sm text-[#64748B] leading-relaxed"></p>
-        <div id="score-microfrase" class="microfrase hidden mt-3"></div>
-      </div>
-
-      <button class="btn-pri mb-4" onclick="ir('p4')">Ver proyección de tu negocio →</button>
-    </div>
+<!-- ═══════════════ P2 — FORMULARIO ═══════════════ -->
+<div id="p2" class="p">
+  <div class="progreso">
+    <div class="prog-dot on"></div>
+    <div class="prog-dot"></div>
+    <div class="prog-dot"></div>
+    <div class="prog-dot"></div>
+    <div class="prog-dot"></div>
   </div>
+  <div class="body" style="padding-top:20px;">
+    <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:4px;">Datos del negocio</h2>
+    <p style="font-size:13px; color:var(--gris); margin-bottom:20px;">Ingresa montos aproximados sin IGV.</p>
 
-  <!-- ══════════════════════════════════════════
-       PANTALLA 4 — PROYECCIÓN
-  ══════════════════════════════════════════ -->
-  <div id="p4" class="pantalla flex-col min-h-screen">
+    <!-- BLOQUE 1: Negocio -->
+    <div class="sep">Tu negocio</div>
 
-    <div class="bg-white border-b border-[#E2E8F0] px-5 py-4 sticky top-0 z-10">
-      <div class="flex items-center justify-between mb-3">
-        <button onclick="ir('p3')" class="text-[#94A3B8] text-sm font-semibold">← Atrás</button>
-        <div class="flex items-center gap-2">
-          <svg width="20" height="20" viewBox="0 0 90 90" fill="none">
-            <circle cx="45" cy="45" r="38" stroke="#1A56A0" stroke-width="3" fill="none"/>
-            <polyline points="12,45 22,45 27,45 31,58 36,28 41,50 45,38 49,28 53,45 63,45 78,45" stroke="#1A56A0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <circle cx="49" cy="28" r="5" fill="#F2C94C"/>
-          </svg>
-          <span class="text-xs text-[#64748B] font-semibold">Paso 4 de 5</span>
-        </div>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:80%"></div></div>
+    <label class="label">Nombre del negocio</label>
+    <input id="i-nombre" type="text" class="input" placeholder="">
+
+    <label class="label">Ventas mensuales (promedio)</label>
+    <div class="input-prefix">
+      <span>S/</span>
+      <input id="i-ventas" type="number" min="0" class="input" placeholder="0">
     </div>
 
-    <div class="flex-1 px-5 py-6 overflow-y-auto">
-      <h2 class="text-[#0D3B6E] text-xl font-extrabold mb-1">Si no se toman acciones</h2>
-      <p class="text-[#64748B] text-sm mb-6">Proyección basada en el ritmo actual de tu negocio</p>
+    <!-- BLOQUE 2: Equipo -->
+    <div class="sep" style="margin-top:20px;">Tu equipo</div>
 
-      <!-- Hero proyección -->
-      <div class="bg-[#FDECEB] border border-[#C0392B] rounded-2xl p-5 text-center mb-5">
-        <p class="text-[#C0392B] text-xs font-bold uppercase tracking-wider mb-2">Impacto estimado en 12 meses</p>
-        <div id="proy-monto" class="text-5xl font-black text-[#C0392B] mb-1"></div>
-        <p id="proy-subtitulo" class="text-[#64748B] text-sm"></p>
-      </div>
+    <label class="label">Régimen laboral</label>
+    <select id="i-regimen" class="input">
+      <option value="1.09">Microempresa (REMYPE)</option>
+      <option value="1.22">Pequeña Empresa</option>
+      <option value="1.45">Régimen General</option>
+    </select>
+    <p class="hint">Si no estás seguro, revisa tu constancia de RUC en SUNAT o consulta con tu contador.</p>
 
-      <!-- Cuerpo -->
-      <div class="bg-white rounded-2xl p-5 mb-4 border border-[#E2E8F0]">
-        <p id="proy-texto" class="text-[#1E293B] text-[15px] leading-relaxed mb-3"></p>
-        <p class="text-[#94A3B8] text-xs italic">Este cálculo no incluye posibles contingencias laborales ni intereses acumulados.</p>
-      </div>
-
-      <!-- Frase de esperanza -->
-      <div class="bg-[#E8F5EE] border border-[#1A7A4A] rounded-2xl p-5 mb-6 text-center">
-        <p class="text-[#1A7A4A] font-bold text-[15px] leading-relaxed">
-          "Con la estructura financiera correcta, este escenario es completamente evitable."
-        </p>
-      </div>
-
-      <button class="btn-pri mb-4" onclick="ir('p5')">Ver cómo solucionarlo →</button>
+    <label class="label" style="margin-top:14px;">Planilla bruta — sueldos básicos que pagas</label>
+    <div class="input-prefix">
+      <span>S/</span>
+      <input id="i-planilla" type="number" min="0" class="input" placeholder="0">
     </div>
+
+    <label class="label">Número de trabajadores</label>
+    <input id="i-empleados" type="number" min="0" class="input" placeholder="0">
+
+    <!-- BLOQUE 3: Gastos -->
+    <div class="sep" style="margin-top:20px;">Gastos del negocio</div>
+    <p class="hint" style="margin-top:4px; margin-bottom:4px;">Ingresa cada gasto por separado — un estimado está bien.</p>
+
+    <label class="label" style="margin-top:14px;">Insumos / mercadería / materiales</label>
+    <div class="input-prefix">
+      <span>S/</span>
+      <input id="i-insumos" type="number" min="0" class="input" placeholder="">
+    </div>
+
+    <label class="label">Alquiler del local</label>
+    <div class="input-prefix">
+      <span>S/</span>
+      <input id="i-alquiler" type="number" min="0" class="input" placeholder="">
+    </div>
+
+    <label class="label">Luz, agua, internet, teléfono</label>
+    <div class="input-prefix">
+      <span>S/</span>
+      <input id="i-servicios" type="number" min="0" class="input" placeholder="0">
+    </div>
+
+    <label class="label">Transporte / combustible</label>
+    <div class="input-prefix">
+      <span>S/</span>
+      <input id="i-transporte" type="number" min="0" class="input" placeholder="0">
+    </div>
+
+    <label class="label">Contador / seguridad / mantenimiento</label>
+    <div class="input-prefix">
+      <span>S/</span>
+      <input id="i-contador" type="number" min="0" class="input" placeholder="0">
+    </div>
+
+    <!-- BLOQUE 4: Retiro y Deuda -->
+    <div class="sep" style="margin-top:20px;">Tu retiro y deudas</div>
+
+    <label class="label" style="margin-top:14px;">¿Cuánto sacas del negocio para ti al mes?</label>
+    <div class="input-prefix">
+      <span>S/</span>
+      <input id="i-retiro" type="number" min="0" class="input" placeholder="">
+    </div>
+    <p class="hint">Este dato es clave para ver la utilidad real que te deja el negocio.</p>
+
+    <label class="label" style="margin-top:14px;">¿Tienes préstamos o créditos activos?</label>
+    <div class="toggle-row">
+      <button id="tb-no" class="toggle-btn on" onclick="toggleDeuda(false)">No tengo</button>
+      <button id="tb-si" class="toggle-btn" onclick="toggleDeuda(true)">Sí tengo</button>
+    </div>
+    <div id="campo-deuda" style="display:none; margin-top:10px;">
+      <div class="input-prefix">
+        <span>S/</span>
+        <input id="i-deuda" type="number" min="0" class="input" placeholder="">
+      </div>
+      <p class="hint">Suma todas las cuotas: bancos, financieras, prestamistas.</p>
+    </div>
+
+    <div class="gap"></div>
+    <button class="btn" onclick="calcular()">Calcular diagnóstico →</button>
+    <div class="gap-sm"></div>
   </div>
+</div>
 
-  <!-- ══════════════════════════════════════════
-       PANTALLA 5 — CTA WHATSAPP
-  ══════════════════════════════════════════ -->
-  <div id="p5" class="pantalla flex-col min-h-screen">
+<!-- ═══════════════ P3 — REVELACIONES ═══════════════ -->
+<div id="p3" class="p" style="background:var(--bg);">
+  <div class="progreso">
+    <div class="prog-dot on"></div>
+    <div class="prog-dot on"></div>
+    <div class="prog-dot"></div>
+    <div class="prog-dot"></div>
+    <div class="prog-dot"></div>
+  </div>
+  <div class="body" style="padding-top:20px;">
+    <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:4px;">Tus números reales</h2>
+    <p id="subtitulo-p3" style="font-size:13px; color:var(--gris); margin-bottom:20px;"></p>
 
-    <div class="bg-white border-b border-[#E2E8F0] px-5 py-4 sticky top-0 z-10">
-      <div class="flex items-center justify-between mb-3">
-        <div></div>
-        <div class="flex items-center gap-2">
-          <svg width="20" height="20" viewBox="0 0 90 90" fill="none">
-            <circle cx="45" cy="45" r="38" stroke="#1A56A0" stroke-width="3" fill="none"/>
-            <polyline points="12,45 22,45 27,45 31,58 36,28 41,50 45,38 49,28 53,45 63,45 78,45" stroke="#1A56A0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <circle cx="49" cy="28" r="5" fill="#F2C94C"/>
-          </svg>
-          <span class="text-xs text-[#64748B] font-semibold">Paso 5 de 5</span>
-        </div>
+    <!-- Revelación 1 -->
+    <div id="rev1" class="rev rev-amarillo">
+      <div class="rev-tag">
+        <span id="dot1" class="dot dot-amarillo"></span>
+        <span id="etq1" style="color:var(--amber);">UTILIDAD REAL MENSUAL</span>
       </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+      <div id="monto1" class="rev-monto amarillo">S/ 0</div>
+      <p id="texto1" class="rev-texto"></p>
+      <p id="trad1" class="rev-traduccion"></p>
+      <div id="mf1" class="microfrase" style="display:none;"></div>
     </div>
 
-    <div class="flex-1 px-5 py-6 overflow-y-auto">
-
-      <!-- Recordatorio score -->
-      <div id="score-reminder" class="rounded-xl p-4 text-center mb-6 border"></div>
-
-      <h2 class="text-[#0D3B6E] text-xl font-extrabold mb-2">Ahora sabes cómo está tu empresa.</h2>
-      <p class="text-[#64748B] text-[15px] leading-relaxed mb-6">
-        El siguiente paso es entender <strong>por qué</strong> y cómo ordenarlo.
-      </p>
-
-      <!-- Preview mensaje WA -->
-      <div class="bg-[#E8F5EE] border border-[#A7F3D0] rounded-2xl p-4 mb-6">
-        <p class="text-[#064E3B] text-xs font-bold mb-2">💬 Mensaje que se enviará a Talía:</p>
-        <p id="preview-wa" class="text-[#1E293B] text-sm leading-relaxed italic"></p>
+    <!-- Revelación 2 (solo si tiene empleados) -->
+    <div id="rev2" class="rev rev-amarillo">
+      <div class="rev-tag">
+        <span id="dot2" class="dot dot-amarillo"></span>
+        <span id="etq2" style="color:var(--amber);">COSTO LABORAL REAL</span>
       </div>
+      <div id="monto2" class="rev-monto amarillo">S/ 0</div>
+      <p id="texto2" class="rev-texto"></p>
+      <p id="trad2" class="rev-traduccion"></p>
+      <div id="mf2" class="microfrase" style="display:none;"></div>
+    </div>
 
-      <!-- Botón WhatsApp -->
-      <a id="btn-whatsapp" href="#" target="_blank" class="btn-wa mb-3">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
-          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-        </svg>
-        Hablar con Talía por WhatsApp
+    <!-- Revelación 3 -->
+    <div id="rev3" class="rev rev-verde">
+      <div class="rev-tag">
+        <span id="dot3" class="dot dot-verde"></span>
+        <span id="etq3" style="color:var(--verde);">PUNTO DE EQUILIBRIO</span>
+      </div>
+      <div id="monto3" class="rev-monto verde">S/ 0</div>
+      <p id="texto3" class="rev-texto"></p>
+      <p id="trad3" class="rev-traduccion"></p>
+      <div id="mf3" class="microfrase" style="display:none;"></div>
+    </div>
+
+    <button class="btn" onclick="ir('p4')">Ver mi diagnóstico completo →</button>
+    <button class="btn btn-ghost" onclick="ir('p2')">Corregir datos</button>
+    <div class="gap-sm"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ P4 — DIAGNÓSTICO ═══════════════ -->
+<div id="p4" class="p" style="background:var(--bg);">
+  <div class="progreso">
+    <div class="prog-dot on"></div>
+    <div class="prog-dot on"></div>
+    <div class="prog-dot on"></div>
+    <div class="prog-dot"></div>
+    <div class="prog-dot"></div>
+  </div>
+  <div class="body" style="padding-top:20px;">
+    <h2 style="font-size:20px; font-weight:800; color:var(--navy); margin-bottom:4px;">Diagnóstico</h2>
+    <p id="nombre-p4" style="font-size:13px; color:var(--gris); margin-bottom:20px;"></p>
+
+    <!-- Score -->
+    <div id="score-card" class="score-card score-vulnerable">
+      <div id="score-num" class="score-num" style="color:var(--amber);">--</div>
+      <div id="score-label" class="score-label" style="color:var(--amber);">CALCULANDO</div>
+      <p id="score-desc" class="score-desc"></p>
+    </div>
+
+    <!-- Diagnóstico narrativo -->
+    <div class="diag-card">
+      <h3>📋 Lo que está pasando en tu empresa</h3>
+      <p id="diag-principal" class="diag-principal"></p>
+      <span id="diag-num" class="diag-num" style="display:none;"></span>
+      <div id="diag-secundario" class="diag-secundario" style="display:none;"></div>
+      <div class="diag-preguntas">
+        <p>Las preguntas que necesitas responder</p>
+        <div id="diag-preguntas-lista"></div>
+      </div>
+    </div>
+
+    <!-- Micro frase de control -->
+    <div id="diag-mf" class="microfrase mb-4" style="display:none;"></div>
+
+    <!-- Proyección -->
+    <div class="proy-card">
+      <p class="proy-label">Proyección a 12 meses</p>
+      <div id="proy-monto" class="proy-monto">S/ 0</div>
+      <p id="proy-sub" class="proy-sub"></p>
+      <p class="proy-esperanza">Con la estructura financiera correcta, este escenario es completamente evitable.</p>
+    </div>
+
+    <button class="btn" onclick="ir('p5')">Ver cómo resolverlo →</button>
+    <div class="gap-sm"></div>
+  </div>
+</div>
+
+<!-- ═══════════════ P5 — CTA ═══════════════ -->
+<div id="p5" class="p">
+  <div class="progreso">
+    <div class="prog-dot on"></div>
+    <div class="prog-dot on"></div>
+    <div class="prog-dot on"></div>
+    <div class="prog-dot on"></div>
+    <div class="prog-dot on"></div>
+  </div>
+  <div class="body" style="padding-top:28px;">
+    <div class="tagline-p5">
+      <h2>Ahora sabes cómo está tu empresa.</h2>
+      <p>El siguiente paso es entender por qué y cómo ordenarlo.</p>
+    </div>
+
+    <!-- Score reminder -->
+    <div id="score-reminder" class="score-reminder mb-4">
+      <p style="font-size:11px; color:var(--gris); margin-bottom:4px;">Tu Score de Salud Financiera</p>
+      <p id="reminder-num" style="font-family:'DM Mono',monospace; font-size:40px; font-weight:500; line-height:1; margin-bottom:4px;">--</p>
+      <p id="reminder-label" style="font-size:11px; font-weight:800; letter-spacing:2px; text-transform:uppercase;">--</p>
+    </div>
+
+    <!-- Preview mensaje WA -->
+    <div class="cta-card">
+      <p style="font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--gris); margin-bottom:10px;">Mensaje que se enviará</p>
+      <div id="preview-wa" class="preview-wa"></div>
+      <a id="btn-wa" href="#" target="_blank" class="btn btn-wa">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Hablar con Talía
       </a>
-
-      <p class="text-center text-xs text-[#94A3B8] leading-relaxed mb-8">
-        La primera conversación es sin costo.<br>Te explico qué significa cada número y si puedo ayudarte.
-      </p>
-
-      <!-- Reiniciar -->
-      <button onclick="reiniciar()" class="w-full py-3 rounded-xl border border-[#E2E8F0] text-[#94A3B8] text-sm font-semibold">
-        Hacer un nuevo diagnóstico
-      </button>
     </div>
 
-    <div class="text-center text-xs text-[#CBD5E1] pb-6 pt-2">
-      © 2026 Scanner Financiero · Talía Ill · Tacna, Perú
-    </div>
+    <button class="btn btn-ghost" onclick="reiniciar()">Hacer nuevo diagnóstico</button>
+    <div class="gap"></div>
   </div>
+  <div class="firma">
+    <strong>Talía Ill</strong> · Consultoría Financiera & Operativa<br>
+    No es asesoría. Es intervención directa.
+  </div>
+</div>
 
-</div><!-- fin contenedor móvil -->
+</div><!-- fin .app -->
 
-<!-- ════════════ JAVASCRIPT ════════════ -->
 <script>
+// ═══════════════════════════════════════════
+// CONFIGURACIÓN
+// ═══════════════════════════════════════════
+const WA = '51980984222';
 
 // ═══════════════════════════════════════════
-// CONSTANTES FINANCIERAS — PERÚ 2026
-// Actualizar aquí si cambia la legislación
+// ESTADO
 // ═══════════════════════════════════════════
-const FACTOR_CARGA_LABORAL = 1.36;  // ESSALUD 9% + CTS 8.33% + Gratif. 16.67% + otros 2% = 36%
-const FACTOR_CV_MINIMO     = 0.15;  // Mínimo para empresas de servicios sin insumos
-const SCORE_ESTABLE_MIN    = 80;
-const SCORE_VULNERABLE_MIN = 50;
-const TELEFONO_WA          = '5198098422'; // Número de Talía Ill
-
-// Estado global
-let resultados = {};
 let tieneDeuda = false;
+let R = {}; // resultados globales
 
-// ───────────────────────────────────────────
-// NAVEGACIÓN
-// ───────────────────────────────────────────
+// ═══════════════════════════════════════════
+// UTILIDADES
+// ═══════════════════════════════════════════
 function ir(id) {
-  document.querySelectorAll('.pantalla').forEach(p => {
-    p.classList.remove('activa');
-  });
-  document.getElementById(id).classList.add('activa');
+  document.querySelectorAll('.p').forEach(p => p.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ───────────────────────────────────────────
-// TOGGLE DEUDA
-// ───────────────────────────────────────────
-function toggleDeuda(tiene) {
-  tieneDeuda = tiene;
-  const btnNo = document.getElementById('btn-deuda-no');
-  const btnSi = document.getElementById('btn-deuda-si');
-  const campo = document.getElementById('campo-deuda');
-  if (tiene) {
-    btnSi.className = 'flex-1 py-3 rounded-xl border-2 border-[#1A56A0] bg-[#1A56A0] text-white font-bold text-sm transition-all';
-    btnNo.className = 'flex-1 py-3 rounded-xl border-2 border-[#E2E8F0] text-[#64748B] font-bold text-sm transition-all';
-    campo.classList.remove('hidden');
-  } else {
-    btnNo.className = 'flex-1 py-3 rounded-xl border-2 border-[#1A56A0] bg-[#1A56A0] text-white font-bold text-sm transition-all';
-    btnSi.className = 'flex-1 py-3 rounded-xl border-2 border-[#E2E8F0] text-[#64748B] font-bold text-sm transition-all';
-    campo.classList.add('hidden');
-    document.getElementById('i-deuda').value = '';
-  }
-}
-
-// ───────────────────────────────────────────
-// FORMATEAR SOLES
-// ───────────────────────────────────────────
 function soles(n) {
-  const abs = Math.abs(n);
-  return 'S/ ' + abs.toLocaleString('es-PE', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  return 'S/ ' + Math.abs(n).toLocaleString('es-PE', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 }
 
-function val(id) {
+function pct(n) {
+  return (n * 100).toFixed(1) + '%';
+}
+
+function v(id) {
   return parseFloat(document.getElementById(id).value) || 0;
 }
 
-// ───────────────────────────────────────────
+function toggleDeuda(tiene) {
+  tieneDeuda = tiene;
+  document.getElementById('tb-no').className = 'toggle-btn' + (tiene ? '' : ' on');
+  document.getElementById('tb-si').className = 'toggle-btn' + (tiene ? ' on' : '');
+  document.getElementById('campo-deuda').style.display = tiene ? 'block' : 'none';
+  if (!tiene) document.getElementById('i-deuda').value = '';
+}
+
+function setRev(num, color, monto, texto, trad, microfrase) {
+  const colores = {
+    verde:    { bg: 'rev-verde',    dot: 'dot-verde',    txt: 'verde',    c: '#0F7A45' },
+    amarillo: { bg: 'rev-amarillo', dot: 'dot-amarillo', txt: 'amarillo', c: '#B8700A' },
+    rojo:     { bg: 'rev-rojo',     dot: 'dot-rojo',     txt: 'rojo',     c: '#C0392B' },
+  };
+  const cl = colores[color];
+  const rev = document.getElementById('rev' + num);
+  rev.className = 'rev ' + cl.bg;
+  document.getElementById('dot' + num).className = 'dot ' + cl.dot;
+  document.getElementById('etq' + num).style.color = cl.c;
+  const montoEl = document.getElementById('monto' + num);
+  montoEl.textContent = monto;
+  montoEl.className = 'rev-monto ' + cl.txt;
+  document.getElementById('texto' + num).textContent = texto;
+  document.getElementById('trad' + num).textContent = trad;
+  const mfEl = document.getElementById('mf' + num);
+  if (microfrase && color !== 'verde') {
+    mfEl.textContent = microfrase;
+    mfEl.style.display = 'block';
+  } else {
+    mfEl.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════
 // MOTOR DE CÁLCULO
-// ───────────────────────────────────────────
-function calcular(datos) {
-  const { V, planilla, N, retiro, alquiler, servicios, transporte, insumos, otrosFijos, D } = datos;
+// ═══════════════════════════════════════════
+function motoreCalculo(datos) {
+  const { V, planilla, N, factorRegimen, insumos, alquiler, servicios, transporte, contador, retiro, D } = datos;
 
   // 1. Costo laboral real
-  const costoLaboralReal   = N > 0 ? planilla * FACTOR_CARGA_LABORAL : 0;
+  const costoLaboralReal   = N > 0 ? planilla * factorRegimen : 0;
   const subregistroLaboral = costoLaboralReal - planilla;
 
   // 2. Estructura de costos
-  const CF         = alquiler + servicios + transporte + otrosFijos + costoLaboralReal + D + retiro;
+  // CF excluye retiro — el PE mide sostenibilidad estructural de la empresa
+  const CF         = alquiler + servicios + transporte + contador + costoLaboralReal + D;
   const CV         = insumos;
-  const costoTotal = CF + CV;
+  const utilidadOp = V - CF - CV;               // sin retiro del gerente
+  const utilidadR  = V - CF - CV - retiro;      // con retiro (utilidad real disponible)
+  const margen     = V > 0 ? utilidadR / V : 0;
 
-  // 3. Rentabilidad
-  const utilidadReal = V - costoTotal;
-  const margen       = V > 0 ? utilidadReal / V : 0;
+  // 3. Punto de equilibrio
+  const FACTOR_CV_MIN    = 0.10; // mínimo 10% para evitar PE infinito en servicios puros
+  const factorCV         = V > 0 ? Math.max(CV / V, FACTOR_CV_MIN) : FACTOR_CV_MIN;
+  const margenContrib    = 1 - factorCV;
+  const PE               = margenContrib > 0 ? CF / margenContrib : null;
+  const distanciaPE      = PE !== null ? V - PE : null;
 
-  // 4. Punto de equilibrio
-  const factorCV   = V > 0 ? Math.max(CV / V, FACTOR_CV_MINIMO) : FACTOR_CV_MINIMO;
-  const margenDisp = 1 - factorCV;
-  const PE         = margenDisp > 0 ? CF / margenDisp : null;
-  const distanciaPE = PE !== null ? V - PE : null;
+  // 4. Índices de riesgo
+  const IPL              = V > 0 ? costoLaboralReal / V : 0;
+  const ratioDeuda       = V > 0 ? D / V : 0;
+  const pctCF            = V > 0 ? CF / V : 0;
+  const pctRetiro        = utilidadOp > 0 ? retiro / utilidadOp : (retiro > 0 ? 999 : 0);
 
-  // 5. Índices de riesgo
-  const IPL        = V > 0 ? costoLaboralReal / V : 0;
-  const ratioDeuda = V > 0 ? D / V : 0;
+  // 5. Scoring
+  let pR = margen > 0.15 ? 40 : margen > 0.05 ? 25 : margen >= 0 ? 10 : 0;
+  let pL = IPL < 0.25 ? 30 : IPL <= 0.40 ? 20 : 5;
+  let pD = ratioDeuda < 0.10 ? 30 : ratioDeuda <= 0.25 ? 15 : 0;
+  const score = pR + pL + pD;
+  const clasificacion = score >= 80 ? 'ESTABLE' : score >= 50 ? 'VULNERABLE' : 'CRÍTICO';
 
   // 6. Proyección anual
-  const proyeccion = utilidadReal < 0
-    ? Math.abs(utilidadReal) * 12
+  const proyeccion = utilidadR < 0
+    ? Math.abs(utilidadR) * 12
     : subregistroLaboral * 12;
 
-  return { costoLaboralReal, subregistroLaboral, CF, CV, costoTotal,
-           utilidadReal, margen, PE, distanciaPE, IPL, ratioDeuda,
-           proyeccion, V, planilla, N, D };
-}
-
-// ───────────────────────────────────────────
-// MOTOR DE SCORING
-// ───────────────────────────────────────────
-function scoring(margen, IPL, ratioDeuda) {
-  let pR = 0;
-  if (margen > 0.15)      pR = 40;
-  else if (margen > 0.05) pR = 25;
-  else if (margen >= 0)   pR = 10;
-  else                    pR = 0;
-
-  let pL = 0;
-  if (IPL < 0.25)         pL = 30;
-  else if (IPL <= 0.40)   pL = 20;
-  else                    pL = 0;   // corregido de 5 a 0
-
-  let pD = 0;
-  if (ratioDeuda < 0.10)        pD = 30;
-  else if (ratioDeuda <= 0.25)  pD = 15;
-  else                          pD = 0;
-
-  const score = pR + pL + pD;
-  const clasificacion = score >= SCORE_ESTABLE_MIN    ? 'ESTABLE'
-                      : score >= SCORE_VULNERABLE_MIN ? 'VULNERABLE'
-                      :                                 'CRÍTICO';
-  return { score, clasificacion };
-}
-
-// ───────────────────────────────────────────
-// SEMÁFORO
-// ───────────────────────────────────────────
-function semaforo(condicion) {
-  // condicion: 'verde' | 'amarillo' | 'rojo'
-  const mapa = {
-    verde:    { dot: 'dot-verde',    texto: 'texto-verde',    etiqueta: '● ESTABLE',    card: 'semaforo-verde'    },
-    amarillo: { dot: 'dot-amarillo', texto: 'texto-amarillo', etiqueta: '◆ ATENCIÓN',   card: 'semaforo-amarillo' },
-    rojo:     { dot: 'dot-rojo',     texto: 'texto-rojo',     etiqueta: '▲ CRÍTICO',    card: 'semaforo-rojo'     },
+  return {
+    V, planilla, N, factorRegimen, retiro, D,
+    costoLaboralReal, subregistroLaboral,
+    CF, CV, utilidadOp, utilidadR, margen,
+    PE, distanciaPE, factorCV, margenContrib,
+    IPL, ratioDeuda, pctCF, pctRetiro,
+    score, clasificacion,
+    proyeccion,
   };
-  return mapa[condicion];
 }
 
-// ───────────────────────────────────────────
-// RENDERIZAR REVELACIONES
-// ───────────────────────────────────────────
-function renderizar(r, sc) {
-  const { costoLaboralReal, subregistroLaboral, utilidadReal, margen,
-          PE, distanciaPE, IPL, V, planilla, N, D, proyeccion } = r;
-  const { score, clasificacion } = sc;
+// ═══════════════════════════════════════════
+// MOTOR DE ESCENARIOS
+// ═══════════════════════════════════════════
+function determinarEscenario(r) {
+  // Escenarios activos (pueden ser múltiples)
+  const escenarios = [];
+
+  if (r.utilidadR < 0)          escenarios.push('E');
+  if (r.pctRetiro > 0.60)       escenarios.push('B');
+  if (r.pctCF > 0.55)           escenarios.push('A');
+  if (r.subregistroLaboral > r.planilla * 0.15 && r.N > 0) escenarios.push('C1');
+  if (r.IPL > 0.40)             escenarios.push('C2');
+  if (escenarios.length === 0)  escenarios.push('D');
+
+  // El dominante es el primero en la lista de prioridad
+  const dominante = escenarios[0];
+  const secundarios = escenarios.slice(1);
+
+  return { dominante, secundarios };
+}
+
+function generarNarrativa(r, escenarios) {
+  const { dominante, secundarios } = escenarios;
   const nombre = document.getElementById('i-nombre').value.trim() || 'tu empresa';
 
-  // ── REVELACIÓN 1: Utilidad Real ──
-  let sem1, mf1 = '';
-  if (margen > 0.15)       sem1 = 'verde';
-  else if (margen > 0.05)  sem1 = 'amarillo';
-  else if (margen >= 0)    sem1 = 'amarillo';
-  else                     sem1 = 'rojo';
+  let principal = '';
+  let numDestacado = null;
+  let preguntas = [];
+  let microfrase = '';
+  let textoSecundario = '';
 
-  const s1 = semaforo(sem1);
-  set('dot1', '', s1.dot);
-  document.getElementById('dot1').className = `w-2.5 h-2.5 rounded-full ${s1.dot}`;
-  document.getElementById('etiqueta1').textContent  = s1.etiqueta;
-  document.getElementById('etiqueta1').className    = `text-xs font-bold ${s1.texto}`;
-  document.getElementById('monto1').textContent     = utilidadReal >= 0 ? soles(utilidadReal) : '- ' + soles(utilidadReal);
-  document.getElementById('monto1').className       = `text-4xl font-black mb-2 ${s1.texto}`;
-  document.getElementById('texto1').textContent     = `Tus ingresos son ${soles(V)}. Después de todos tus costos reales, tu utilidad mensual es ${utilidadReal >= 0 ? soles(utilidadReal) : '- ' + soles(utilidadReal)}.`;
-  const margenSoles = Math.round(margen * 100);
-  document.getElementById('traduccion1').textContent = `De cada S/ 100 que vendes, S/ ${margenSoles >= 0 ? margenSoles : 0} son para ti.`;
-  if (sem1 !== 'verde') {
-    mostrarMicrofrase('microfrase1', 'Esto puede mejorar con una estructura de costos correcta.');
+  const ventas12 = r.V * 12;
+
+  switch (dominante) {
+    case 'E': {
+      const perdidaMes = Math.abs(r.utilidadR);
+      const causas = [];
+      if (r.pctCF > 0.55) causas.push(`los gastos fijos representan el ${pct(r.pctCF)} de tus ingresos`);
+      if (r.pctRetiro > 0.60) causas.push(`el retiro mensual representa el ${pct(r.pctRetiro)} de la utilidad operativa`);
+      if (r.IPL > 0.40) causas.push(`la planilla consume el ${pct(r.IPL)} de las ventas`);
+      const causaTexto = causas.length > 0 ? ` La causa principal que muestran los números: ${causas[0]}.` : '';
+
+      principal = `${nombre} está gastando ${soles(r.CF + r.CV + r.retiro)} al mes y generando ${soles(r.V)} en ventas. La diferencia es ${soles(perdidaMes)} que el negocio está perdiendo cada mes.${causaTexto}`;
+      numDestacado = `- ${soles(perdidaMes)} al mes`;
+      preguntas = ['¿Por dónde empiezo a cortar sin dañar la operación?', '¿Cuánto tiempo puede sostenerse el negocio en esta situación?'];
+      microfrase = 'Esta situación tiene solución — pero requiere intervención en la estructura, no solo en las ventas.';
+      break;
+    }
+    case 'B': {
+      const pctRetiroPct = Math.round(r.pctRetiro * 100);
+      principal = `${nombre} genera ${soles(r.utilidadOp)} al mes antes de tu retiro personal. Estás sacando ${soles(r.retiro)}, que representa el ${pctRetiroPct}% de lo que produce el negocio. Una empresa sana debería destinar no más del 50-60% de su utilidad al retiro del dueño. El resto necesita quedarse para cubrir imprevistos y crecer.`;
+      numDestacado = `${soles(r.retiro)} de retiro mensual`;
+      preguntas = ['¿Cuánto debería ser mi retiro según el tamaño real de mi empresa?', '¿Cómo estructuro los retiros sin asfixiar la operación?'];
+      microfrase = 'El problema no es que tu empresa gane poco — es cuánto sale antes de que se consolide.';
+      break;
+    }
+    case 'A': {
+      const ventasNecesarias = r.CF / 0.35; // para que CF sea 35% de ventas
+      const brecha = ventasNecesarias - r.V;
+      const pctCFpct = Math.round(r.pctCF * 100);
+      principal = `Tus gastos fijos son ${soles(r.CF)} al mes. Con tus ventas actuales de ${soles(r.V)}, eso representa el ${pctCFpct}% de todo lo que entra — ese porcentaje es alto. Tu punto de equilibrio está en ${r.PE ? soles(r.PE) : '—'} y tus ventas actuales ${r.distanciaPE >= 0 ? 'lo superan apenas' : 'no lo alcanzan'}. Tienes dos caminos: aumentar tus ventas hasta que los gastos fijos pesen menos, o reestructurar costos para bajar el punto de equilibrio a tu nivel actual.`;
+      numDestacado = brecha > 0 ? `+${soles(brecha)} para equilibrar la estructura` : `${soles(Math.abs(r.distanciaPE || 0))} sobre el PE actual`;
+      preguntas = ['¿Qué costos fijos puedo reestructurar sin afectar la operación?', '¿Cuánto necesito vender para que mi estructura actual sea sostenible?'];
+      microfrase = 'Con el nivel de ventas correcto, esta misma estructura puede ser muy rentable.';
+      break;
+    }
+    case 'C1': {
+      const subAnual = r.subregistroLaboral * 12;
+      principal = `Declaras ${soles(r.planilla)} en sueldos. Con las cargas sociales de tu régimen, el costo real de tu equipo es ${soles(r.costoLaboralReal)} al mes. Hay ${soles(r.subregistroLaboral)} que tu empresa asume cada mes sin estar registrado correctamente.`;
+      numDestacado = `${soles(r.subregistroLaboral * 12)} de exposición anual ante SUNAT`;
+      preguntas = ['¿Cómo regularizo mi situación laboral sin que destruya el flujo de caja?', '¿Cuál es el riesgo real si SUNAT audita mi planilla?'];
+      microfrase = 'Registrar esto correctamente hoy es mucho más barato que enfrentar una fiscalización mañana.';
+      break;
+    }
+    case 'C2': {
+      const IPLpct = Math.round(r.IPL * 100);
+      principal = `Tu equipo te cuesta ${soles(r.costoLaboralReal)} al mes — el ${IPLpct}% de todo lo que vendes. En un negocio saludable, la planilla no debería superar el 30-35% de los ingresos. Tienes dos caminos: aumentar las ventas para que la planilla pese menos, o revisar si la estructura de tu equipo está alineada con lo que produce cada persona.`;
+      numDestacado = `${IPLpct}% de ventas va a planilla`;
+      preguntas = ['¿Mi equipo actual está dimensionado correctamente para mi nivel de ventas?', '¿Cómo aumentar productividad sin aumentar la planilla?'];
+      microfrase = 'Una planilla bien dimensionada es el mayor activo de un negocio en crecimiento.';
+      break;
+    }
+    case 'D': {
+      const margenPct = Math.round(r.margen * 100);
+      const holguraPct = r.distanciaPE ? Math.round((r.distanciaPE / r.V) * 100) : 0;
+      principal = `${nombre} está generando ${soles(r.utilidadR)} al mes con un margen del ${margenPct}%. Estás ${holguraPct}% por encima de tu punto de equilibrio. Esa es una posición sólida. La pregunta que pocas veces se hace un gerente en esta situación: ¿dónde está yendo esa utilidad? Si no hay un destino definido para esa ganancia, el dinero tiende a diluirse. Una empresa que gana bien pero no reinvierte se queda en el mismo nivel año tras año.`;
+      numDestacado = `${soles(r.utilidadR * 12)} de utilidad potencial al año`;
+      preguntas = ['¿Qué parte de mi utilidad debería reinvertir y en qué específicamente?', '¿Cuál es el siguiente nivel de ventas al que puede llegar mi empresa con su estructura actual?'];
+      microfrase = 'Estar bien hoy no garantiza estar bien mañana — la reinversión es lo que separa a los negocios que crecen.';
+      break;
+    }
   }
-  applyCardColor('rev1', sem1);
 
-  // ── REVELACIÓN 2: Costo Laboral ──
-  if (N > 0) {
+  // Secundarios
+  if (secundarios.length > 0) {
+    const textos = secundarios.map(s => {
+      if (s === 'B') return `Retiro del gerente representa el ${Math.round(r.pctRetiro*100)}% de la utilidad operativa`;
+      if (s === 'A') return `Gastos fijos representan el ${Math.round(r.pctCF*100)}% de los ingresos`;
+      if (s === 'C1') return `Subregistro laboral: ${soles(r.subregistroLaboral)} mensuales sin registrar`;
+      if (s === 'C2') return `Planilla consume el ${Math.round(r.IPL*100)}% de las ventas`;
+      return '';
+    }).filter(Boolean);
+    if (textos.length > 0) {
+      textoSecundario = 'También se identificó: ' + textos.join('. ') + '.';
+    }
+  }
+
+  return { principal, numDestacado, preguntas, microfrase, textoSecundario };
+}
+
+// ═══════════════════════════════════════════
+// CALCULAR Y RENDERIZAR
+// ═══════════════════════════════════════════
+function calcular() {
+  const V = v('i-ventas');
+  if (V <= 0) {
+    alert('Por favor ingresa tus ventas mensuales.');
+    document.getElementById('i-ventas').focus();
+    return;
+  }
+
+  const datos = {
+    V,
+    planilla:      v('i-planilla'),
+    N:             v('i-empleados'),
+    factorRegimen: parseFloat(document.getElementById('i-regimen').value),
+    insumos:       v('i-insumos'),
+    alquiler:      v('i-alquiler'),
+    servicios:     v('i-servicios'),
+    transporte:    v('i-transporte'),
+    contador:      v('i-contador'),
+    retiro:        v('i-retiro'),
+    D:             tieneDeuda ? v('i-deuda') : 0,
+  };
+
+  R = motoreCalculo(datos);
+  const esc = determinarEscenario(R);
+  const nar = generarNarrativa(R, esc);
+
+  renderP3(R);
+  renderP4(R, esc, nar);
+  renderP5(R, esc);
+
+  ir('p3');
+}
+
+// ── RENDERIZAR P3
+function renderP3(r) {
+  const nombre = document.getElementById('i-nombre').value.trim() || 'tu negocio';
+  document.getElementById('subtitulo-p3').textContent = nombre;
+
+  // R1 — Utilidad real
+  const c1 = r.utilidadR > 0 && r.margen > 0.10 ? 'verde' : r.utilidadR > 0 ? 'amarillo' : 'rojo';
+  const margenSoles = Math.round(r.margen * 100);
+  setRev(1, c1,
+    r.utilidadR >= 0 ? soles(r.utilidadR) : '- ' + soles(r.utilidadR),
+    `Tus ingresos son ${soles(r.V)}. Después de todos los costos del negocio y tu retiro personal, tu utilidad mensual real es ${r.utilidadR >= 0 ? soles(r.utilidadR) : '- ' + soles(r.utilidadR)}.`,
+    `De cada S/ 100 que vendes, S/ ${Math.max(0, margenSoles)} son realmente tuyos.`,
+    'Esto puede mejorar con una estructura de costos correcta.'
+  );
+
+  // R2 — Costo laboral
+  if (r.N > 0) {
     document.getElementById('rev2').style.display = '';
-    const pctSub = planilla > 0 ? subregistroLaboral / planilla : 0;
-    const sem2 = pctSub > 0.20 ? 'rojo' : 'amarillo';
-    const s2 = semaforo(sem2);
-    document.getElementById('dot2').className     = `w-2.5 h-2.5 rounded-full ${s2.dot}`;
-    document.getElementById('etiqueta2').textContent = s2.etiqueta;
-    document.getElementById('etiqueta2').className   = `text-xs font-bold ${s2.texto}`;
-    document.getElementById('monto2').textContent    = soles(costoLaboralReal);
-    document.getElementById('monto2').className      = `text-4xl font-black mb-2 ${s2.texto}`;
-    document.getElementById('texto2').textContent    = `Declaras ${soles(planilla)} en sueldos. Con ESSALUD, CTS y gratificaciones, el costo real de tu equipo es ${soles(costoLaboralReal)} al mes.`;
-    document.getElementById('traduccion2').textContent = `Hay ${soles(subregistroLaboral)} que tu empresa asume cada mes sin estar registrado.`;
-    mostrarMicrofrase('microfrase2', 'Registrar esto correctamente protege tu empresa ante SUNAT.');
-    applyCardColor('rev2', sem2);
+    const pctSub = r.planilla > 0 ? r.subregistroLaboral / r.planilla : 0;
+    const c2 = pctSub > 0.20 ? 'rojo' : 'amarillo';
+    setRev(2, c2,
+      soles(r.costoLaboralReal),
+      `Declaras ${soles(r.planilla)} en sueldos. Con ESSALUD, CTS y gratificaciones según tu régimen, el costo real de tu equipo es ${soles(r.costoLaboralReal)} al mes.`,
+      `Hay ${soles(r.subregistroLaboral)} que tu empresa asume sin estar registrado correctamente.`,
+      'Registrar esto correctamente protege tu empresa ante SUNAT.'
+    );
   } else {
     document.getElementById('rev2').style.display = 'none';
   }
 
-  // ── REVELACIÓN 3: Punto de Equilibrio ──
-  if (PE !== null) {
-    const sem3 = distanciaPE >= 0 ? (distanciaPE / V > 0.10 ? 'verde' : 'amarillo') : 'rojo';
-    const s3 = semaforo(sem3);
-    document.getElementById('dot3').className     = `w-2.5 h-2.5 rounded-full ${s3.dot}`;
-    document.getElementById('etiqueta3').textContent = s3.etiqueta;
-    document.getElementById('etiqueta3').className   = `text-xs font-bold ${s3.texto}`;
-    document.getElementById('monto3').textContent    = soles(PE);
-    document.getElementById('monto3').className      = `text-4xl font-black mb-2 ${s3.texto}`;
-    document.getElementById('texto3').textContent    = `Para cubrir todos tus costos este mes, necesitas vender al menos ${soles(PE)}.`;
-    if (distanciaPE !== null) {
-      document.getElementById('traduccion3').textContent = distanciaPE >= 0
-        ? `Tus ventas están ${soles(distanciaPE)} por encima de ese límite. ✓`
-        : `Tus ventas están ${soles(distanciaPE)} por debajo de ese límite.`;
-    }
-    if (sem3 !== 'verde') {
-      mostrarMicrofrase('microfrase3', 'Conocer este número es el primer paso para tomar decisiones con certeza.');
-    }
-    applyCardColor('rev3', sem3);
+  // R3 — Punto de equilibrio
+  if (r.PE !== null) {
+    const c3 = r.distanciaPE >= 0 ? (r.distanciaPE / r.V > 0.15 ? 'verde' : 'amarillo') : 'rojo';
+    setRev(3, c3,
+      soles(r.PE),
+      `Para cubrir todos los costos estructurales de tu empresa este mes, necesitas vender al menos ${soles(r.PE)}.`,
+      r.distanciaPE >= 0
+        ? `Tus ventas están ${soles(r.distanciaPE)} por encima de ese límite. ✓`
+        : `Tus ventas están ${soles(Math.abs(r.distanciaPE))} por debajo de ese límite.`,
+      'Conocer este número es el primer paso para tomar decisiones con certeza.'
+    );
   } else {
-    document.getElementById('monto3').textContent  = '—';
-    document.getElementById('texto3').textContent  = 'Tu margen no es suficiente para cubrir los costos fijos en este momento.';
-    document.getElementById('traduccion3').textContent = '';
-    mostrarMicrofrase('microfrase3', 'Conocer este punto es el primer paso para ordenar tu negocio.');
-    applyCardColor('rev3', 'rojo');
+    setRev(3, 'rojo', '—',
+      'Tu margen de contribución no es suficiente para calcular el punto de equilibrio en este momento.',
+      '',
+      'Conocer este punto es el primer paso para ordenar tu negocio.'
+    );
   }
-
-  // ── SCORE GLOBAL ──
-  const scoreCard = document.getElementById('score-card');
-  scoreCard.className = scoreCard.className.replace(/score-\w+/g, '');
-  let scoreClass, scoreTexto, scoreDesc, scoreMF = '';
-
-  if (clasificacion === 'ESTABLE') {
-    scoreClass = 'score-estable';
-    scoreTexto = 'text-[#1A7A4A]';
-    scoreDesc  = 'La estructura de tu negocio muestra señales sólidas. Hay oportunidades de optimización que pueden fortalecer aún más tu posición.';
-  } else if (clasificacion === 'VULNERABLE') {
-    scoreClass = 'score-vulnerable';
-    scoreTexto = 'text-[#B8700A]';
-    scoreDesc  = 'Tu negocio tiene movimiento, pero hay puntos que merecen atención antes de que se conviertan en problemas mayores.';
-    scoreMF    = 'Con los ajustes correctos, empresas en esta situación han mejorado su score en 2 a 3 meses.';
-  } else {
-    scoreClass = 'score-critico';
-    scoreTexto = 'text-[#C0392B]';
-    scoreDesc  = 'Esto es lo que muestran tus números hoy. No es el punto de llegada, es el punto de partida.';
-    scoreMF    = 'Empresas en esta situación han revertido su posición en 3 a 6 meses con el enfoque correcto.';
-  }
-
-  scoreCard.classList.add(scoreClass, 'rounded-2xl', 'p-6', 'mb-6', 'text-center', 'fade-in', 'shadow-sm');
-  document.getElementById('score-numero').textContent  = score;
-  document.getElementById('score-numero').className    = `text-6xl font-black mb-2 ${scoreTexto}`;
-  document.getElementById('score-etiqueta').textContent = clasificacion;
-  document.getElementById('score-etiqueta').className   = `inline-block px-4 py-1.5 rounded-full text-sm font-black uppercase tracking-wider mb-3 ${scoreTexto} bg-white`;
-  document.getElementById('score-descripcion').textContent = scoreDesc;
-  if (scoreMF) mostrarMicrofrase('score-microfrase', scoreMF);
-
-  // ── PROYECCIÓN ──
-  document.getElementById('proy-monto').textContent = soles(proyeccion);
-  if (utilidadReal < 0) {
-    document.getElementById('proy-subtitulo').textContent = 'podrían dejar de generarse en los próximos 12 meses.';
-    document.getElementById('proy-texto').innerHTML = `Si esta situación continúa sin ajustes, <strong>${nombre}</strong> podría dejar de generar aproximadamente <strong>${soles(proyeccion)}</strong> en los próximos 12 meses.`;
-  } else {
-    document.getElementById('proy-subtitulo').textContent = 'en costos anuales sin registrar correctamente.';
-    document.getElementById('proy-texto').innerHTML = `<strong>${nombre}</strong> genera utilidad, pero hay <strong>${soles(proyeccion)}</strong> en costos anuales que no están siendo registrados correctamente. Esto representa un riesgo ante SUNAT.`;
-  }
-
-  // ── SCORE REMINDER P5 ──
-  const reminder = document.getElementById('score-reminder');
-  reminder.className = `rounded-xl p-4 text-center mb-6 border ${
-    clasificacion === 'ESTABLE'    ? 'bg-[#E8F5EE] border-[#1A7A4A]' :
-    clasificacion === 'VULNERABLE' ? 'bg-[#FFF8E6] border-[#B8700A]' :
-                                     'bg-[#FDECEB] border-[#C0392B]'
-  }`;
-  reminder.innerHTML = `
-    <p class="text-xs text-[#64748B] mb-1">Tu Score de Salud Financiera</p>
-    <p class="text-4xl font-black ${scoreTexto} mb-1">${score}</p>
-    <p class="text-sm font-black uppercase tracking-wider ${scoreTexto}">${clasificacion}</p>
-  `;
-
-  // ── WHATSAPP ──
-  const msg = `Hola Talía, hice el diagnóstico de ${nombre} y obtuve un score de ${score} (${clasificacion}). Me gustaría entender mejor mis números.`;
-  document.getElementById('preview-wa').textContent = msg;
-  document.getElementById('btn-whatsapp').href = `https://wa.me/${TELEFONO_WA}?text=${encodeURIComponent(msg)}`;
 }
 
-function applyCardColor(id, sem) {
-  const el = document.getElementById(id);
-  el.classList.remove('semaforo-verde','semaforo-amarillo','semaforo-rojo');
-  if (sem === 'verde')    el.classList.add('semaforo-verde');
-  if (sem === 'amarillo') el.classList.add('semaforo-amarillo');
-  if (sem === 'rojo')     el.classList.add('semaforo-rojo');
-}
+// ── RENDERIZAR P4
+function renderP4(r, esc, nar) {
+  const nombre = document.getElementById('i-nombre').value.trim() || 'tu negocio';
+  document.getElementById('nombre-p4').textContent = nombre;
 
-function mostrarMicrofrase(id, texto) {
-  const el = document.getElementById(id);
-  el.textContent = '💡 ' + texto;
-  el.classList.remove('hidden');
-}
-
-function set(id, prop, val) {
-  // helper no usado, dejado por compatibilidad
-}
-
-// ───────────────────────────────────────────
-// CALCULAR Y MOSTRAR (con pantalla de carga)
-// ───────────────────────────────────────────
-function calcularYMostrar() {
-  const V = val('i-ventas');
-  if (!V || V <= 0) {
-    document.getElementById('err-ventas').classList.remove('hidden');
-    document.getElementById('i-ventas').focus();
-    return;
-  }
-  document.getElementById('err-ventas').classList.add('hidden');
-
-  const datos = {
-    V,
-    planilla:   val('i-planilla'),
-    N:          val('i-empleados'),
-    retiro:     val('i-retiro'),
-    alquiler:   val('i-alquiler'),
-    servicios:  val('i-servicios'),
-    transporte: val('i-transporte'),
-    insumos:    val('i-insumos'),
-    otrosFijos: val('i-otros'),
-    D:          tieneDeuda ? val('i-deuda') : 0,
+  // Score
+  const sc = document.getElementById('score-card');
+  sc.className = 'score-card ' + (
+    r.clasificacion === 'ESTABLE' ? 'score-estable' :
+    r.clasificacion === 'VULNERABLE' ? 'score-vulnerable' : 'score-critico'
+  );
+  const scoreColor = r.clasificacion === 'ESTABLE' ? '#0F7A45' : r.clasificacion === 'VULNERABLE' ? '#B8700A' : '#C0392B';
+  const scoreNum = document.getElementById('score-num');
+  scoreNum.textContent = r.score;
+  scoreNum.style.color = scoreColor;
+  const scoreLbl = document.getElementById('score-label');
+  scoreLbl.textContent = r.clasificacion;
+  scoreLbl.style.color = scoreColor;
+  const scoreDesc = {
+    ESTABLE:    'La estructura de tu negocio muestra señales sólidas. Hay oportunidades de optimización que pueden fortalecer aún más tu posición.',
+    VULNERABLE: 'Tu negocio tiene movimiento, pero hay puntos que merecen atención antes de que se conviertan en problemas mayores.',
+    CRÍTICO:    'Esto es lo que muestran los números hoy. No es el punto de llegada — es el punto de partida.',
   };
+  document.getElementById('score-desc').textContent = scoreDesc[r.clasificacion];
 
-  // Pantalla de carga
-  ir('p-carga');
+  // Narrativa
+  document.getElementById('diag-principal').textContent = nar.principal;
 
-  const frases = [
-    'Calculando tu punto de equilibrio...',
-    'Revisando el costo real de tu equipo...',
-    'Preparando tu diagnóstico financiero...'
-  ];
-  let i = 0;
-  const intervalo = setInterval(() => {
-    document.getElementById('texto-carga').textContent = frases[i % 3];
-    i++;
-  }, 500);
+  const diagNum = document.getElementById('diag-num');
+  if (nar.numDestacado) {
+    diagNum.textContent = nar.numDestacado;
+    diagNum.style.display = 'block';
+  } else {
+    diagNum.style.display = 'none';
+  }
 
-  setTimeout(() => {
-    clearInterval(intervalo);
-    resultados = calcular(datos);
-    const sc    = scoring(resultados.margen, resultados.IPL, resultados.ratioDeuda);
-    renderizar(resultados, sc);
-    ir('p3');
-  }, 1800);
+  const diagSec = document.getElementById('diag-secundario');
+  if (nar.textoSecundario) {
+    diagSec.textContent = nar.textoSecundario;
+    diagSec.style.display = 'block';
+  } else {
+    diagSec.style.display = 'none';
+  }
+
+  const lista = document.getElementById('diag-preguntas-lista');
+  lista.innerHTML = nar.preguntas.map(p =>
+    `<div class="pregunta-item"><span>${p}</span></div>`
+  ).join('');
+
+  const mfEl = document.getElementById('diag-mf');
+  if (nar.microfrase) {
+    mfEl.textContent = nar.microfrase;
+    mfEl.style.display = 'block';
+  } else {
+    mfEl.style.display = 'none';
+  }
+
+  // Proyección
+  document.getElementById('proy-monto').textContent = soles(r.proyeccion);
+  if (r.utilidadR < 0) {
+    document.getElementById('proy-sub').textContent =
+      `Si esta situación continúa sin ajustes, ${nombre} podría dejar de generar aproximadamente ${soles(r.proyeccion)} en los próximos 12 meses.`;
+  } else {
+    document.getElementById('proy-sub').textContent =
+      `${nombre} genera utilidad, pero hay ${soles(r.proyeccion)} en costos laborales anuales que no están siendo registrados correctamente — riesgo acumulado ante SUNAT.`;
+  }
 }
 
-// ───────────────────────────────────────────
-// REINICIAR
-// ───────────────────────────────────────────
+// ── RENDERIZAR P5
+function renderP5(r, esc) {
+  const nombre = document.getElementById('i-nombre').value.trim() || 'mi negocio';
+
+  // Score reminder
+  const scoreColor = r.clasificacion === 'ESTABLE' ? '#0F7A45' : r.clasificacion === 'VULNERABLE' ? '#B8700A' : '#C0392B';
+  const scoreBg    = r.clasificacion === 'ESTABLE' ? '#E8F5EE' : r.clasificacion === 'VULNERABLE' ? '#FFF8E6' : '#FDECEB';
+  const reminder = document.getElementById('score-reminder');
+  reminder.style.background = scoreBg;
+  reminder.style.borderColor = scoreColor;
+  document.getElementById('reminder-num').textContent = r.score;
+  document.getElementById('reminder-num').style.color = scoreColor;
+  document.getElementById('reminder-label').textContent = r.clasificacion;
+  document.getElementById('reminder-label').style.color = scoreColor;
+
+  // Mensaje WA
+  const escNombre = {
+    E: 'pérdida mensual', B: 'retiro desproporcionado', A: 'gastos fijos pesados',
+    C1: 'subregistro laboral', C2: 'planilla alta', D: 'empresa sana'
+  };
+  const msg = `Hola Talía, hice el diagnóstico de ${nombre} y obtuve un score de ${r.score} (${r.clasificacion}). El diagnóstico principal fue: ${escNombre[esc.dominante] || 'diagnóstico financiero'}. Me gustaría entender mejor mis números y cómo ordenarlos.`;
+  document.getElementById('preview-wa').textContent = msg;
+  document.getElementById('btn-wa').href = `https://wa.me/${WA}?text=${encodeURIComponent(msg)}`;
+}
+
+// ── REINICIAR
 function reiniciar() {
-  ['i-nombre','i-ventas','i-planilla','i-empleados','i-retiro',
-   'i-alquiler','i-servicios','i-transporte','i-insumos','i-otros','i-deuda']
+  ['i-nombre','i-ventas','i-planilla','i-empleados','i-insumos',
+   'i-alquiler','i-servicios','i-transporte','i-contador','i-retiro','i-deuda']
     .forEach(id => document.getElementById(id).value = '');
   toggleDeuda(false);
   ir('p1');
 }
-
 </script>
 </body>
 </html>
